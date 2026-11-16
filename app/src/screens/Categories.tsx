@@ -4,11 +4,10 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from '../lib/navigation'
-import { Plus, Edit3, ArrowLeftRight, Eye, EyeOff, Trash2, Check, Sparkles, ChevronRight, AlertTriangle, Search, X } from 'lucide-react'
+import { Plus, Edit3, ArrowLeftRight, Eye, EyeOff, Trash2, Check, ChevronRight, AlertTriangle, Search, X } from 'lucide-react'
 import { filterHref } from '../lib/filters'
 import { db, uuid } from '../db/db'
 import { saveTxn, softDeleteCategory, undeleteCategory } from '../db/ledger'
-import { seedDummyEntriesForCategory } from '../lib/dummyData'
 import type { Category, Direction, Account, Party } from '../db/types'
 import { ICONS, PALETTE } from '../db/seed'
 import { useData, useToast } from '../store'
@@ -38,7 +37,6 @@ export function Categories() {
   const [selectedSwitchCat, setSelectedSwitchCat] = useState<Category | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [search, setSearch] = useState('')
-  const seededRef = useRef(false)
 
   const list = categories.filter((c) => c.direction === dir)
   const query = search.trim().toLowerCase()
@@ -67,54 +65,6 @@ export function Categories() {
     : parents.flatMap((p) => [p, ...list.filter((k) => k.parentId === p.id)])
 
   const count = (id: string) => txns.filter((x) => x.categoryId === id && !x.deletedAt).length
-
-  // Automatically ensure all categories have sample entries
-  useEffect(() => {
-    if (seededRef.current) return
-    if (!categories || categories.length === 0 || !accounts || accounts.length === 0) return
-
-    // Find active categories that have fewer than 3 entries
-    const needSeed = categories.filter((c) => !c.deletedAt && count(c.id) < 3)
-    if (needSeed.length > 0) {
-      seededRef.current = true
-      ;(async () => {
-        try {
-          for (const cat of needSeed) {
-            const currentCount = count(cat.id)
-            const needed = Math.max(0, 4 - currentCount)
-            if (needed > 0) {
-              await seedDummyEntriesForCategory(cat, accounts, parties, needed)
-            }
-          }
-          toast({
-            text: `Added sample entries to ${needSeed.slice(0, 3).map((c) => nm(c)).join(', ')}${needSeed.length > 3 ? ` +${needSeed.length - 3} more` : ''}`,
-            tone: 'ok',
-          })
-        } catch (e) {
-          console.error('Error auto-seeding sample entries:', e)
-        }
-      })()
-    }
-  }, [categories, accounts, parties])
-
-  const handleSeedCurrentCategories = async () => {
-    setIsProcessing(true)
-    try {
-      const toSeed = list.length > 0 ? list : categories
-      for (const cat of toSeed) {
-        await seedDummyEntriesForCategory(cat, accounts, parties, 4)
-      }
-      toast({
-        text: `Added sample entries to ${toSeed.map((c) => nm(c)).join(', ')}`,
-        tone: 'ok',
-      })
-    } catch (err) {
-      console.error(err)
-      toast({ text: 'Error adding sample entries', tone: 'info' })
-    } finally {
-      setIsProcessing(false)
-    }
-  }
 
   const handleRequestDelete = (c: Category) => {
     const cCount = count(c.id)
@@ -192,16 +142,6 @@ export function Categories() {
           <p className="text-xs text-[#6E6E73] dark:text-[#A1A1A6]">Organize your Money In and Money Out categories</p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            disabled={isProcessing}
-            onClick={handleSeedCurrentCategories}
-            className="apple-press flex h-9 items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3.5 text-xs font-semibold text-neutral-800 shadow-sm hover:bg-neutral-50 active:bg-neutral-100 dark:border-white/10 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
-            title="Add 5-10 dummy entries to these categories"
-          >
-            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-            <span>Add sample entries</span>
-          </button>
           <button
             type="button"
             onClick={() => setEdit('new')}
@@ -697,17 +637,6 @@ function CategoryEditor({
 
         {cat && (
           <div className="space-y-2 border-t border-black/[0.06] pt-3 dark:border-white/[0.08]">
-            <button
-              type="button"
-              onClick={async () => {
-                await seedDummyEntriesForCategory(cat, accounts, parties, 7)
-                onClose()
-              }}
-              className="apple-press flex w-full items-center justify-center gap-1.5 rounded-xl border border-dashed border-amber-500/40 bg-amber-500/5 py-2 text-xs font-semibold text-amber-900 hover:bg-amber-500/10 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-              <span>Add 7 sample entries to this category</span>
-            </button>
             <button
               type="button"
               className="apple-press flex w-full items-center justify-center gap-2 rounded-xl py-2 text-sm font-semibold text-[#FF3B30] hover:bg-[#FF3B30]/10 dark:text-[#FF453A] dark:hover:bg-[#FF453A]/15"

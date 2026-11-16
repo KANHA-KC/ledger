@@ -119,15 +119,37 @@ export function BackupSheet({
 
       // Step 2: If Google Drive is connected, upload to appDataFolder
       const token = (await db.settings.get('google_access_token'))?.value as string | undefined
+      let cloudSuccess = false
       if (token) {
-        setProgressMsg('Uploading to Google Drive sandbox (appDataFolder)...')
-        const { payload } = await generateBackupPackage(savedPass)
-        await uploadToGoogleDrive(token, payload)
+        try {
+          setProgressMsg('Uploading to Google Drive sandbox (appDataFolder)...')
+          const { payload } = await generateBackupPackage(savedPass)
+          await uploadToGoogleDrive(token, payload)
+          cloudSuccess = true
+        } catch (cloudErr: any) {
+          console.warn('Cloud upload warning:', cloudErr)
+          if (cloudErr.message === 'GOOGLE_AUTH_EXPIRED') {
+            await reloadStatus()
+            toast({
+              text: 'Device backup saved! Google Drive session expired. Please re-authenticate your Google Account.',
+              tone: 'info',
+            })
+            setShowConnectGoogle(true)
+            return
+          }
+          toast({
+            text: `Device backup saved! (Cloud: ${cloudErr.message || 'offline'})`,
+            tone: 'info',
+          })
+          return
+        }
       }
 
       await reloadStatus()
       toast({
-        text: t('backup.success') || 'Backup complete! Saved to your device & cloud.',
+        text: cloudSuccess
+          ? (t('backup.success') || 'Backup complete! Saved to your device & cloud.')
+          : 'Backup complete! Saved to your device.',
         tone: 'ok',
       })
     } catch (err: any) {

@@ -137,5 +137,13 @@
     "invalidPhone": "Please enter a 10-digit mobile number"
   },
   "lock": { "title": "Enter PIN", "wrong": "Wrong PIN", "forgot": "Forgot PIN? Verify with OTP", "demoUnlock": "One-Click Demo Unlock (PIN: 1234)" },
+  "backup": {
+    "title": "Cloud & Device Backup",
+    "cloudTitle": "Google Drive & Device Backup",
+    "never": "Never",
+    "now": "Back Up Now",
+    "schedule": "Back up to Google Drive (Schedule)",
+    "success": "Backup complete! Saved to your device & cloud."
+  },
   "misc": { "you": "You", "noCategory": "No category", "all": "All", "paise": "Amount", "loading": "Loading…" }
 }

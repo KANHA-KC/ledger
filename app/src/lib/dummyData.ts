@@ -216,6 +216,40 @@ export async function seedDummyEntriesForCategory(
 }
 
 /**
+ * Permanently removes all dummy sample transactions and their ledger lines
+ * across the local database (or for a specific business).
+ */
+export async function removeAllDummyData(businessId?: string): Promise<number> {
+  try {
+    const dummyTxns = await db.txns
+      .filter((t) => {
+        const isDummy =
+          (Array.isArray(t.tags) && t.tags.includes('dummy-sample')) ||
+          (Array.isArray(t.tags) && t.tags.includes('dummy')) ||
+          t.createdBy === 'Sample Data Generator'
+        if (!isDummy) return false
+        if (businessId && t.businessId !== businessId) return false
+        return true
+      })
+      .toArray()
+
+    if (dummyTxns.length === 0) return 0
+
+    const ids = dummyTxns.map((t) => t.id)
+    // Delete all associated ledger lines
+    await db.lines.where('txnId').anyOf(ids).delete()
+    // Delete the dummy txns
+    await db.txns.bulkDelete(ids)
+
+    console.log(`[dummyData] Successfully removed ${ids.length} dummy transactions`)
+    return ids.length
+  } catch (err) {
+    console.error('removeAllDummyData error:', err)
+    return 0
+  }
+}
+
+/**
  * Ensures all active categories in a business have dummy transactions.
  */
 export async function seedDummyEntriesForAllCategories(

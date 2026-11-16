@@ -8,6 +8,72 @@ export const syncEnabled = isCloudEnabled()
 let syncInProgress = false
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
+function formatPayloadForPush(table: string, obj: any): any {
+  if (table === 'txns') {
+    return {
+      id: obj.id,
+      date: obj.date,
+      amount: obj.amount,
+      direction: obj.direction,
+      category_id: obj.categoryId ?? obj.category_id ?? null,
+      account_id: obj.accountId ?? obj.account_id ?? null,
+      to_account_id: obj.toAccountId ?? obj.to_account_id ?? null,
+      party_id: obj.partyId ?? obj.party_id ?? null,
+      on_credit: Boolean(obj.onCredit ?? obj.on_credit),
+      note: obj.note || '',
+      tags: obj.tags || [],
+      photo_id: obj.photoId ?? obj.photo_id ?? null,
+      created_by: obj.createdBy ?? obj.created_by ?? '',
+      deleted_at: obj.deletedAt ?? obj.deleted_at ?? null,
+      updated_at: obj.updatedAt ?? obj.updated_at ?? new Date().toISOString(),
+    }
+  }
+  if (table === 'parties') {
+    return {
+      id: obj.id,
+      name: obj.name,
+      name_alt: obj.nameAlt ?? obj.name_alt ?? '',
+      phone: obj.phone,
+      type: obj.type || 'customer',
+      deleted_at: obj.deletedAt ?? obj.deleted_at ?? null,
+      updated_at: obj.updatedAt ?? obj.updated_at ?? new Date().toISOString(),
+    }
+  }
+  if (table === 'categories') {
+    return {
+      id: obj.id,
+      direction: obj.direction,
+      name_en: obj.name_en,
+      name_hi: obj.name_hi,
+      icon: obj.icon,
+      color: obj.color,
+      parent_id: obj.parentId ?? obj.parent_id ?? null,
+      is_default: Boolean(obj.isDefault ?? obj.is_default),
+      sort: obj.sort ?? 0,
+      hidden: Boolean(obj.hidden),
+      special: obj.special ?? null,
+      key: obj.key ?? null,
+      deleted_at: obj.deletedAt ?? obj.deleted_at ?? null,
+      updated_at: obj.updatedAt ?? obj.updated_at ?? new Date().toISOString(),
+    }
+  }
+  if (table === 'accounts') {
+    return {
+      id: obj.id,
+      kind: obj.kind,
+      name_en: obj.name_en,
+      name_hi: obj.name_hi,
+      icon: obj.icon,
+      details: obj.details ?? {},
+      is_default: Boolean(obj.isDefault ?? obj.is_default),
+      hidden: Boolean(obj.hidden),
+      deleted_at: obj.deletedAt ?? obj.deleted_at ?? null,
+      updated_at: obj.updatedAt ?? obj.updated_at ?? new Date().toISOString(),
+    }
+  }
+  return obj
+}
+
 /** Push all pending outbox entries and pending txns to Supabase */
 export async function pushPending(targetBusinessId?: string): Promise<number> {
   if (!isCloudEnabled() || !navigator.onLine) return 0
@@ -31,7 +97,7 @@ export async function pushPending(targetBusinessId?: string): Promise<number> {
 
       for (const [bizId, txns] of Object.entries(byBiz)) {
         if (targetBusinessId && bizId !== targetBusinessId) continue
-        const cleanTxns = txns.map((t) => ({ ...t, photoId: undefined }))
+        const cleanTxns = txns.map((t) => formatPayloadForPush('txns', t))
         const newVer = await syncPushCloud(bizId, { txns: cleanTxns })
         if (newVer !== null) {
           await db.txns.bulkUpdate(
@@ -63,11 +129,13 @@ export async function pushPending(targetBusinessId?: string): Promise<number> {
 
       for (const item of items) {
         if (item.table in changes) {
-          const payload = { ...item.payload }
+          const raw = { ...item.payload }
           if (item.action === 'delete') {
-            payload.deleted_at = new Date().toISOString()
+            raw.deletedAt = new Date().toISOString()
+            raw.deleted_at = new Date().toISOString()
           }
-          changes[item.table].push(payload)
+          const formatted = formatPayloadForPush(item.table, raw)
+          changes[item.table].push(formatted)
         }
       }
 

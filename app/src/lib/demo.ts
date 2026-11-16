@@ -4,7 +4,6 @@ import type { Business, Category, Party, Txn } from '../db/types'
 import { setPin, DEMO_PIN } from './auth'
 import { todayISO, addDaysISO } from './format'
 import { saveTxn } from '../db/ledger'
-import { seedDummyEntriesForCategory } from './dummyData'
 
 export const DEMO_BUSINESS_ID = 'demo-sharma-kirana'
 export const DEMO_BUSINESS_NAME = 'Jai Gurudev Traders (जय गुरुदेव ट्रेडर्स)'
@@ -188,26 +187,6 @@ export async function ensureDemoCategories(businessId: string) {
           }
           await saveTxn(tinsTxn)
         }
-      }
-    }
-
-    // Ensure all categories have realistic dummy entries if empty
-    const cats = await db.categories
-      .where('businessId')
-      .equals(businessId)
-      .filter((c) => !c.deletedAt)
-      .toArray()
-    const accs = await db.accounts.where('businessId').equals(businessId).toArray()
-    const prts = await db.parties.where('businessId').equals(businessId).toArray()
-
-    for (const cat of cats) {
-      const cnt = await db.txns
-        .where('categoryId')
-        .equals(cat.id)
-        .filter((x) => !x.deletedAt)
-        .count()
-      if (cnt === 0) {
-        await seedDummyEntriesForCategory(cat, accs, prts, 4)
       }
     }
   } catch (err) {

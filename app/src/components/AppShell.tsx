@@ -10,7 +10,7 @@ import { setNumerals } from '../lib/format'
 import { startSyncLoop } from '../lib/sync'
 import { checkAndRunScheduledBackup } from '../lib/backup'
 import { ensureDemoCategories, DEMO_BUSINESS_ID, DEMO_BUSINESS_NAME } from '../lib/demo'
-import { seedDummyEntriesForAllCategories, removeAllUdhaarTransactions, cleanPartyNames } from '../lib/dummyData'
+import { removeAllDummyData, removeAllUdhaarTransactions, cleanPartyNames } from '../lib/dummyData'
 import { DataProvider, ToastProvider } from '../store'
 import { Layout } from './Layout'
 import { Onboarding } from '../screens/Onboarding'
@@ -68,8 +68,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             }
           }
           await ensureDemoCategories(b.id)
-          seedDummyEntriesForAllCategories(b.id, 4).catch((err) =>
-            console.error('seedDummyEntriesForAllCategories error:', err)
+          removeAllDummyData(b.id).catch((err) =>
+            console.error('removeAllDummyData error:', err)
           )
           removeAllUdhaarTransactions(b.id).catch((err) =>
             console.error('removeAllUdhaarTransactions error:', err)
