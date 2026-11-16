@@ -44,6 +44,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
     syncTheme()
 
+    // Request persistent storage to protect local ledger from mobile browser cache purges
+    if (typeof navigator !== 'undefined' && navigator.storage?.persist) {
+      navigator.storage.persist().catch(() => {})
+    }
+
     ;(async () => {
       await loadPersonalDict()
       setNumerals(await getSetting('numerals', 'latn'))

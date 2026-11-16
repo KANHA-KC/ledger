@@ -124,33 +124,70 @@ export function Reports() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div>
-        <h1 className="apple-large-title text-neutral-900 dark:text-white">
-          {t('reports.title') || 'Reports & Analysis'}
-        </h1>
-        <p className="text-xs text-[#6E6E73] dark:text-[#A1A1A6]">Business performance and financial statements</p>
+      {/* Header with Top-Right Action Buttons */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="apple-large-title text-neutral-900 dark:text-white">
+            {t('reports.title') || 'Reports'}
+          </h1>
+          <p className="text-xs text-[#6E6E73] dark:text-[#A1A1A6]">
+            Business performance and financial statements
+          </p>
+        </div>
+
+        {/* Top-Right Action Buttons */}
+        <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+          <button
+            type="button"
+            onClick={pdf}
+            className="apple-press inline-flex h-9 items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-white/[0.1] dark:bg-[#2C2C2E] dark:text-white"
+            title="Download / Print PDF"
+          >
+            <Printer className="h-3.5 w-3.5 text-[#007AFF]" />
+            <span>{t('reports.pdf') || 'PDF'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={excelSummary}
+            className="apple-press inline-flex h-9 items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-white/[0.1] dark:bg-[#2C2C2E] dark:text-white"
+            title="Export Excel CSV"
+          >
+            <FileSpreadsheet className="h-3.5 w-3.5 text-[#34C759]" />
+            <span>{t('reports.excel') || 'Excel'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => shareText(shareLine)}
+            className="apple-press inline-flex h-9 items-center gap-1.5 rounded-full bg-[#25D366] px-3.5 text-xs font-bold text-white shadow-sm hover:bg-[#20BA5A]"
+            title="Share via WhatsApp"
+          >
+            <MessageCircle className="h-3.5 w-3.5" />
+            <span>{t('act.whatsapp') || 'WhatsApp'}</span>
+          </button>
+        </div>
       </div>
 
-      {/* Month Navigator (Apple Style) */}
-      <div className="apple-card flex items-center justify-between p-2">
+      {/* Month Navigator (Apple Style - Compact Width) */}
+      <div className="apple-card flex items-center justify-between p-1.5 w-full sm:max-w-xs">
         <button
           type="button"
           onClick={() => setMonth(addMonthsISO(month, -1))}
-          className="apple-press flex h-10 w-10 items-center justify-center rounded-xl text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-[#2C2C2E]"
+          className="apple-press flex h-9 w-9 items-center justify-center rounded-xl text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-[#2C2C2E]"
           aria-label="Previous month"
         >
-          <ChevronLeft className="h-5 w-5" />
+          <ChevronLeft className="h-4 w-4" />
         </button>
-        <span className="text-base font-bold text-neutral-900 dark:text-white">{mLabel}</span>
+        <span className="text-sm font-bold text-neutral-900 dark:text-white">{mLabel}</span>
         <button
           type="button"
           disabled={month >= startOfMonthISO(todayISO())}
           onClick={() => setMonth(addMonthsISO(month, 1))}
-          className="apple-press flex h-10 w-10 items-center justify-center rounded-xl text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-300 dark:hover:bg-[#2C2C2E]"
+          className="apple-press flex h-9 w-9 items-center justify-center rounded-xl text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-300 dark:hover:bg-[#2C2C2E]"
           aria-label="Next month"
         >
-          <ChevronRight className="h-5 w-5" />
+          <ChevronRight className="h-4 w-4" />
         </button>
       </div>
 
@@ -200,36 +237,6 @@ export function Reports() {
               <Money paise={aaya - gaya} tone="auto" size="sm" />
             </div>
           </div>
-        </div>
-
-        {/* Export Buttons Strip */}
-        <div className="mt-4 flex flex-wrap gap-2 pt-2 border-t border-black/[0.04] dark:border-white/[0.06]">
-          <button
-            type="button"
-            onClick={pdf}
-            className="apple-press inline-flex h-9 items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-white/[0.1] dark:bg-[#2C2C2E] dark:text-white"
-          >
-            <Printer className="h-3.5 w-3.5 text-[#007AFF]" />
-            <span>{t('reports.pdf') || 'PDF Print'}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={excelSummary}
-            className="apple-press inline-flex h-9 items-center gap-1.5 rounded-full border border-black/[0.08] bg-white px-3 text-xs font-semibold text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-white/[0.1] dark:bg-[#2C2C2E] dark:text-white"
-          >
-            <FileSpreadsheet className="h-3.5 w-3.5 text-[#34C759]" />
-            <span>{t('reports.excel') || 'Excel CSV'}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => shareText(shareLine)}
-            className="apple-press inline-flex h-9 items-center gap-1.5 rounded-full bg-[#25D366] px-3.5 text-xs font-bold text-white shadow-sm hover:bg-[#20BA5A]"
-          >
-            <MessageCircle className="h-3.5 w-3.5" />
-            <span>{t('act.whatsapp') || 'Share WhatsApp'}</span>
-          </button>
         </div>
       </div>
 

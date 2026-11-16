@@ -5,6 +5,7 @@ import { AppShell } from '../components/AppShell'
 export const metadata: Metadata = {
   title: 'Hisaab — Smart Ledger for Business',
   description: 'Bilingual (हिंदी / English) Apple-designed offline-first business ledger.',
+  manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

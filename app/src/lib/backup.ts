@@ -271,6 +271,79 @@ export async function exportLocalDeviceBackup(passphrase?: string): Promise<numb
 
 export const GOOGLE_DRIVE_APPDATA_SCOPE = 'https://www.googleapis.com/auth/drive.appdata'
 
+/**
+ * 1-Tap Google Identity Services (GIS) OAuth Token Client for Drive appDataFolder.
+ */
+export function initGoogleDriveAuth(
+  onSuccess: (accessToken: string, email?: string) => void,
+  onError?: (err: any) => void
+) {
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+  if (!clientId || typeof window === 'undefined') {
+    onError?.('GOOGLE_CLIENT_ID_NOT_CONFIGURED')
+    return
+  }
+
+  const loadGsiScript = () => {
+    return new Promise<void>((resolve, reject) => {
+      if ((window as any).google?.accounts?.oauth2) {
+        resolve()
+        return
+      }
+      const existing = document.getElementById('google-gsi-client')
+      if (existing) {
+        existing.addEventListener('load', () => resolve())
+        return
+      }
+      const script = document.createElement('script')
+      script.id = 'google-gsi-client'
+      script.src = 'https://accounts.google.com/gsi/client'
+      script.async = true
+      script.defer = true
+      script.onload = () => resolve()
+      script.onerror = (e) => reject(e)
+      document.head.appendChild(script)
+    })
+  }
+
+  loadGsiScript()
+    .then(() => {
+      const google = (window as any).google
+      if (!google?.accounts?.oauth2) {
+        onError?.('GIS_NOT_LOADED')
+        return
+      }
+      const client = google.accounts.oauth2.initTokenClient({
+        client_id: clientId,
+        scope: 'https://www.googleapis.com/auth/drive.appdata email profile',
+        callback: async (res: any) => {
+          if (res && res.access_token) {
+            let email = ''
+            try {
+              const uRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: `Bearer ${res.access_token}` },
+              })
+              if (uRes.ok) {
+                const uData = await uRes.json()
+                email = uData.email || ''
+              }
+            } catch {
+              /* ignore */
+            }
+            onSuccess(res.access_token, email)
+          } else {
+            onError?.(res?.error || 'TOKEN_FAILED')
+          }
+        },
+        error_callback: (err: any) => {
+          onError?.(err)
+        },
+      })
+      client.requestAccessToken({ prompt: 'consent' })
+    })
+    .catch((err) => onError?.(err))
+}
+
 export async function uploadToGoogleDrive(accessToken: string, payload: BackupPayload): Promise<string> {
   const fileContent = JSON.stringify(payload)
   const metadata = {
