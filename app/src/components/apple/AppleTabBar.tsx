@@ -11,7 +11,6 @@ import {
   MoreHorizontal,
   BarChart3,
   Tags,
-  Settings,
   ArrowDownLeft,
   ArrowUpRight,
   X,
@@ -39,7 +38,6 @@ export function AppleTabBar() {
     { href: '/entries', label: t('nav.entries') || 'Entries', icon: BookOpen, match: (p: string) => p.startsWith('/entries') },
     { href: '/reports', label: t('nav.reports') || 'Reports', icon: BarChart3, match: (p: string) => p.startsWith('/reports') },
     { href: '/categories', label: t('nav.categories') || 'Categories', icon: Tags, match: (p: string) => p.startsWith('/categories') },
-    { href: '/more', label: t('nav.settings') || 'Settings & Backup', icon: Settings, match: (p: string) => p.startsWith('/more') },
   ]
 
   return (
