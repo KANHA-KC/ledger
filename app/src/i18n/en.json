@@ -1,0 +1,134 @@
+{
+  "app": { "name": "Hisaab", "tagline": "Money in, money out — all in one place, in your language." },
+  "nav": { "home": "Home", "entries": "Entries", "udhaar": "Udhaar", "more": "More", "add": "Add", "reports": "Reports", "categories": "Categories", "wallets": "Wallets", "bin": "Bin", "settings": "Settings" },
+  "act": {
+    "in": "Money In", "out": "Money Out", "inShort": "+ Money In", "outShort": "− Money Out",
+    "save": "Save", "cancel": "Cancel", "undo": "Undo", "edit": "Edit", "delete": "Delete", "restore": "Restore",
+    "next": "Next", "back": "Back", "done": "Done", "skip": "Skip", "seeAll": "See all", "filter": "Filter",
+    "clear": "Clear all", "share": "Share", "call": "Call", "whatsapp": "WhatsApp", "addDetails": "Add details (optional)",
+    "hideDetails": "Hide details", "transfer": "Move money", "add": "Add", "search": "Search",
+    "close": "Close", "apply": "Show entries", "confirm": "Yes, do it"
+  },
+  "period": { "today": "Today", "week": "This week", "month": "This month", "lastMonth": "Last month", "custom": "Custom", "from": "From", "to": "To" },
+  "hero": {
+    "in": "Money In", "out": "Money Out", "left": "Left over",
+    "more": "{amount} more left over than {prev}", "less": "{amount} less left over than {prev}", "same": "Same as {prev}",
+    "prev_today": "yesterday", "prev_week": "last week", "prev_month": "last month", "prev_lastMonth": "the month before", "prev_custom": "the period before"
+  },
+  "home": {
+    "incomeCategories": "Money In",
+    "noIncomeCats": "No Money In categories yet",
+    "wallets": "Your money", "udhaarTitle": "Udhaar", "toGet": "To receive", "toGive": "To pay",
+    "fromPeople": "{count, plural, =0 {no one} one {from # person} other {from # people}}",
+    "toPeople": "{count, plural, =0 {no one} one {to # person} other {to # people}}",
+    "cashflow": "Money In vs Money Out", "whereSpent": "Where the money went", "rest": "Others",
+    "netWorth": "Net worth", "youHave": "You have", "youOwe": "You owe", "recent": "Recent entries",
+    "setOpening": "Set your opening balances to see net worth", "setNow": "Set now",
+    "emptyTitle": "Add your first entry", "emptyBody": "Tap the green button when money comes in, the red one when it goes out.",
+    "offline": "Offline — entries are saved on this phone", "pendingSync": "{count, plural, one {# entry} other {# entries}} waiting to sync"
+  },
+  "add": {
+    "titleIn": "Money In", "titleOut": "Money Out", "amount": "How much?", "speak": "Speak",
+    "listening": "Listening… say e.g. \"500 ka saaman kharida\"", "voiceUnsupported": "Voice is not available in this browser. Please type the amount.",
+    "pickCategory": "What was it for?", "note": "Note", "notePh": "e.g. Gupta Traders bill", "party": "Person", "partyRequired": "Choose the person for udhaar",
+    "wallet": "Paid from / to", "date": "Date", "photo": "Bill photo", "addPhoto": "Take / add photo", "removePhoto": "Remove photo",
+    "tags": "Tags", "tagsPh": "e.g. Diwali, Shop 2", "onCreditIn": "Not paid yet — on udhaar", "onCreditOut": "Not paid yet — bought on udhaar",
+    "saved": "Saved", "updated": "Updated", "enterAmount": "Type an amount first, using the number pad", "voiceHeard": "Heard: \"{text}\"",
+    "voiceCheck": "Please check and save", "editTitle": "Edit entry", "history": "{count, plural, one {Edited # time} other {Edited # times}}",
+    "moreCategories": "Manage categories"
+  },
+  "party": {
+    "pick": "Choose person", "new": "New person", "name": "Name", "namePh": "e.g. Ramesh Gupta", "phone": "Phone (optional)",
+    "searchPh": "Search name", "type": { "customer": "Customer", "supplier": "Supplier", "worker": "Worker", "lender": "Lender", "other": "Other" },
+    "theyOwe": "Will give you", "youOwe": "You will give", "settled": "All settled", "paisaMila": "Money received", "paisaDiya": "Money paid",
+    "runningBalance": "Balance", "since": "oldest due {days, plural, =0 {today} one {# day} other {# days}} ago",
+    "reminder": "Namaste {name} ji, {business} ka {amount} baaki hai. Kripya jald bhugtan karein. Dhanyavaad.",
+    "noEntries": "No entries with this person yet", "udhaarGivenSale": "Sold on udhaar", "udhaarTakenBuy": "Bought on udhaar"
+  },
+  "udhaar": { "title": "Udhaar", "toGet": "To receive", "toGive": "To pay", "emptyGet": "No one owes you money", "emptyGive": "You don't owe anyone", "giveUdhaar": "Give udhaar", "takeUdhaar": "Take udhaar", "all": "All people" },
+  "entries": {
+    "title": "Entries", "summary": "{count, plural, one {# entry} other {# entries}} · {total}", "searchPh": "Search note, person, category",
+    "dayIn": "in {amount}", "dayOut": "out {amount}", "empty": "No entries match", "emptyAll": "No entries yet",
+    "onCredit": "Udhaar", "transfer": "Moved", "deleteConfirm": "Delete this entry? It will stay in the Bin for 30 days.", "deleted": "Moved to Bin",
+    "dateCol": "Date", "typeCol": "Type", "catCol": "Category", "noteCol": "Description / Note", "walletCol": "Wallet", "amountCol": "Amount", "actionsCol": "Action",
+    "selectAll": "Select all", "selectedCount": "{count, plural, one {# selected} other {# selected}}", "selectedTotal": "Total: {total}",
+    "bulkDelete": "Delete ({count})", "bulkDeleteConfirm": "Move {count, plural, one {# entry} other {# entries}} to Recycle Bin? They can be restored within 30 days.",
+    "bulkDeleted": "Moved {count, plural, one {# entry} other {# entries}} to Recycle Bin",
+    "changeCategory": "Change Category", "chooseNewCategory": "Choose category for selected entries",
+    "bulkCategoryUpdated": "Updated category for {count, plural, one {# entry} other {# entries}}",
+    "exportSelected": "Export", "clearSelection": "Cancel", "allTypes": "All Entries", "allTime": "All Time", "edit": "Edit"
+  },
+  "filter": {
+    "title": "Filter", "direction": "Type", "both": "Both", "dateRange": "Date", "category": "Category", "wallet": "Wallet", "party": "Person",
+    "tag": "Tag", "amount": "Amount", "min": "Min ₹", "max": "Max ₹", "credit": "Udhaar only", "all": "All"
+  },
+  "reports": {
+    "title": "Reports", "monthly": "Monthly summary", "category": "Category report", "in": "Money In", "out": "Money Out", "left": "Left",
+    "share": "Share", "pdf": "PDF", "excel": "Excel", "openingTitle": "Opening wallet balances", "shareText": "{business} — {period}: Money In {in}, Money Out {out}, Left {left}",
+    "lockedNote": "Free plan shows the last 3 months. Exports and full history are part of Basic (trial active).", "category_col": "Category", "amount_col": "Amount", "share_col": "Share", "entries_col": "Entries",
+    "date_col": "Date", "type_col": "Type", "wallet_col": "Wallet", "party_col": "Person", "note_col": "Note", "debit": "Money Out", "credit": "Money In", "account": "Account"
+  },
+  "cat": {
+    "title": "Categories", "in": "Money In", "out": "Money Out", "new": "New category", "name": "Name", "icon": "Picture", "color": "Colour",
+    "parent": "Inside (optional)", "none": "None", "hide": "Hide", "show": "Show", "hidden": "Hidden", "merge": "Merge into…", "mergeConfirm": "Move all entries from {from} into {to}?",
+    "mergeDone": "Merged", "special": "Udhaar", "delete": "Delete category",
+    "deleteConfirm": "Are you sure you want to delete \"{name}\"? It will be moved to the Recycle Bin for 30 days.",
+    "deleteWithDataTitle": "Switch Category & Delete",
+    "hasDataWarning": "\"{name}\" has {count, plural, one {# entry} other {# entries}}.",
+    "switchInstructions": "To delete this category, please select another category to move these entries to:",
+    "noOtherCategories": "No other categories available to switch entries to. Please create another category first.",
+    "switchAndDelete": "Move & Delete",
+    "deleteDone": "Category moved to Recycle Bin",
+    "movedToBin": "Category moved to Recycle Bin",
+    "restored": "Category restored",
+    "permanentDeleted": "Category permanently deleted",
+    "switchAndDeleted": "Moved entries to \"{target}\" and moved \"{name}\" to Recycle Bin"
+  },
+  "wallet": {
+    "title": "Wallets", "transferTitle": "Move money between wallets", "from": "From", "to": "To", "transferNote": "e.g. Galla → bank deposit",
+    "opening": "Opening balance", "assets": "Things you own", "loans": "Loans", "editValue": "Change value", "netWorthNote": "These values are used for net worth.",
+    "rename": "Name", "add": "Add wallet", "same": "Choose two different wallets"
+  },
+  "more": {
+    "title": "More", "language": "Language", "numerals": "Number style", "western": "123", "devanagari": "१२३", "pin": "Change PIN", "highContrast": "High contrast",
+    "plan": "Plan", "free": "Muft (Free)", "basic": "Basic", "pro": "Pro", "trial": "Basic trial: {days, plural, one {# day} other {# days}} left",
+    "planNote": "Basic ₹49/month or ₹499/year · Pro ₹149/month or ₹1,499/year. Payments via UPI AutoPay will be enabled at launch.",
+    "export": "Download all my data", "help": "Help (WhatsApp)", "lock": "Lock now", "business": "Business", "phone": "Phone", "team": "Team members",
+    "teamSoon": "Helpers and accountant access come in the next version", "sync": "Sync", "syncStatus": "{count, plural, =0 {Everything synced} one {# entry waiting} other {# entries waiting}}",
+    "syncLocal": "Saved on this device. Cloud sync turns on when the server is connected.", "reset": "Delete everything on this device", "resetConfirm": "This deletes all entries on this device. Type DELETE to confirm.",
+    "demoReset": "Load Demo Test Account", "demoResetDesc": "Re-populate sample transactions and parties for testing",
+    "shortcuts": "Keyboard: I = money in, O = money out, / = search"
+  },
+  "bin": {
+    "title": "Recycle Bin", "note": "Deleted entries and categories stay here for 30 days before permanent removal",
+    "empty": "Recycle Bin is empty", "emptyBody": "No deleted transactions or categories found",
+    "daysLeft": "{days, plural, one {# day left} other {# days left}}",
+    "emptyBin": "Empty Bin", "emptyBinConfirm": "Are you sure you want to permanently delete all items in the Recycle Bin? This action cannot be undone.",
+    "emptied": "Recycle Bin emptied", "all": "All", "transactions": "Entries", "categories": "Categories", "deleteForever": "Delete Forever",
+    "recoverMissing": "Check Missing", "recoverDone": "Recovered {count} missing category to Recycle Bin", "noNewRecovered": "No missing categories found",
+    "entryPermanentlyDeleted": "Entry permanently deleted", "categoryPermanentlyDeleted": "Category permanently deleted",
+    "searchPh": "Search deleted items, notes, or amounts…",
+    "exportCSV": "Export CSV", "printPDF": "Print / PDF", "tableView": "Table View", "cardsView": "Cards View",
+    "allTypes": "All Types", "allDirections": "All (Money In / Money Out)", "allExpiry": "All Expiry",
+    "expiringSoon": "Expiring soon (< 7 days)", "safeExpiry": "7+ days left",
+    "colItem": "Item / Payment Name", "colCategory": "Category", "colType": "Category", "colDirection": "Type (Money In / Money Out)", "colPaymentType": "Type (Money In / Money Out)", "colAmount": "Amount",
+    "colDeleted": "Deleted Date", "colExpires": "Expires", "colActions": "Actions",
+    "selectedCount": "{count} selected", "restoreSelected": "Restore Selected", "deleteSelected": "Delete Forever",
+    "bulkDeleteConfirm": "Permanently delete {count} selected items? This cannot be undone.",
+    "bulkRestoreDone": "Restored {count} items", "bulkDeleteDone": "Permanently deleted {count} items",
+    "noMatches": "No matching deleted items found", "clearFilters": "Clear filters"
+  },
+  "onb": {
+    "chooseLang": "Choose your language", "phoneTitle": "Your mobile number", "phonePh": "10-digit number", "sendOtp": "Send OTP", "otpTitle": "Enter OTP",
+    "otpSent": "OTP sent to {phone}", "demoOtp": "Demo build: use OTP 123456 (SMS will work once the server is connected)", "wrongOtp": "Wrong OTP. Try 123456.",
+    "pinTitle": "Set a 4-digit PIN", "pinConfirm": "Enter the PIN again", "pinMismatch": "PINs did not match. Try again.",
+    "bizType": "What is your business?", "bizName": "Shop / business name", "bizNamePh": "e.g. Ramesh Kirana Store",
+    "opening": "How much money is in the galla right now?", "openingHint": "You can skip this and add it later",
+    "guideTitle": "Let's add your first sale", "guideBody": "Tap the green \"Money In\" button.", "start": "Start",
+    "demoLogin": "One-Click Demo Login", "demoLoginDesc": "Instant test with preloaded Kirana store & full transaction ledger",
+    "type": { "kirana": "Kirana", "kapda": "Cloth / Tailor", "hardware": "Hardware", "dairy": "Dairy", "khana": "Food / Hotel", "seva": "Service", "kheti": "Farming", "other": "Other" },
+    "invalidPhone": "Please enter a 10-digit mobile number"
+  },
+  "lock": { "title": "Enter PIN", "wrong": "Wrong PIN", "forgot": "Forgot PIN? Verify with OTP", "demoUnlock": "One-Click Demo Unlock (PIN: 1234)" },
+  "misc": { "you": "You", "noCategory": "No category", "all": "All", "paise": "Amount", "loading": "Loading…" }
+}

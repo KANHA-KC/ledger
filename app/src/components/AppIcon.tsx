@@ -1,0 +1,187 @@
+'use client'
+
+import React from 'react'
+import {
+  Wheat,
+  Sprout,
+  Package,
+  Fuel,
+  BrickWall,
+  Hammer,
+  Wrench,
+  Briefcase,
+  Coins,
+  Landmark,
+  Receipt,
+  ShoppingCart,
+  Truck,
+  Smartphone,
+  Utensils,
+  Leaf,
+  LeafyGreen,
+  Flame,
+  Scissors,
+  Store,
+  Handshake,
+  PlusCircle,
+  MinusCircle,
+  Tag,
+  Tags,
+  Wallet,
+  Layers,
+  HardHat,
+  Home,
+  Lightbulb,
+  Banknote,
+  PartyPopper,
+  HeartPulse,
+  BookOpen,
+  Search,
+  Trash2,
+  Smile,
+  Heart,
+  CreditCard,
+  Sparkles,
+  CircleDollarSign,
+  Milk,
+  PawPrint,
+  ArrowDownLeft,
+  ArrowUpRight,
+  ArrowLeftRight,
+  HelpCircle,
+  type LucideIcon,
+  type LucideProps,
+} from 'lucide-react'
+
+export const EMOJI_TO_LUCIDE: Record<string, LucideIcon> = {
+  // Category & Industry Emojis
+  '🛒': ShoppingCart,
+  '📦': Package,
+  '🏠': Home,
+  '💡': Lightbulb,
+  '👷': HardHat,
+  '🛺': Truck,
+  '📱': Smartphone,
+  '📲': Smartphone,
+  '🏡': Home,
+  '🤲': Handshake,
+  '🤝': Handshake,
+  '🏦': Landmark,
+  '💸': Banknote,
+  '🔧': Wrench,
+  '🥛': Milk,
+  '🧵': Scissors,
+  '🍲': Utensils,
+  '🌾': Wheat,
+  '🌿': Leaf,
+  '🌱': Sprout,
+  '⛽': Fuel,
+  '🔥': Flame,
+  '🥬': LeafyGreen,
+  '🧾': Receipt,
+  '💼': Briefcase,
+  '➕': PlusCircle,
+  '➖': MinusCircle,
+  '🪙': Coins,
+  '🚚': Truck,
+  '🧹': Sparkles,
+  '🎉': PartyPopper,
+  '🏥': HeartPulse,
+  '📚': BookOpen,
+  '🧂': Package,
+  '🍚': Utensils,
+  '🧴': Package,
+  '🪔': Flame,
+  '🔩': Wrench,
+  '🧱': BrickWall,
+  '🐄': PawPrint,
+  '✂️': Scissors,
+  '🛠️': Wrench,
+  '🏪': Store,
+  '📥': ArrowDownLeft,
+  '📤': ArrowUpRight,
+  '🧰': Wrench,
+  '🏛️': Landmark,
+  '💳': CreditCard,
+  '🔁': ArrowLeftRight,
+  '🏷️': Tag,
+  '✨': Sparkles,
+  '💰': Coins,
+
+  // Empty states & Feedback
+  '🔍': Search,
+  '📒': BookOpen,
+  '🗑️': Trash2,
+  '😊': Smile,
+  '🙏': Heart,
+  '❔': HelpCircle,
+}
+
+const NAME_TO_LUCIDE: Record<string, LucideIcon> = {
+  wheat: Wheat,
+  sprout: Sprout,
+  package: Package,
+  fuel: Fuel,
+  brickwall: BrickWall,
+  hammer: Hammer,
+  wrench: Wrench,
+  briefcase: Briefcase,
+  coins: Coins,
+  landmark: Landmark,
+  receipt: Receipt,
+  shoppingcart: ShoppingCart,
+  truck: Truck,
+  smartphone: Smartphone,
+  utensils: Utensils,
+  leaf: Leaf,
+  leafygreen: LeafyGreen,
+  flame: Flame,
+  scissors: Scissors,
+  store: Store,
+  handshake: Handshake,
+  pluscircle: PlusCircle,
+  minuscircle: MinusCircle,
+  tag: Tag,
+  tags: Tags,
+  wallet: Wallet,
+  layers: Layers,
+  hardhat: HardHat,
+  home: Home,
+  lightbulb: Lightbulb,
+  banknote: Banknote,
+  partypopper: PartyPopper,
+  heartpulse: HeartPulse,
+  bookopen: BookOpen,
+  search: Search,
+  trash2: Trash2,
+  smile: Smile,
+  heart: Heart,
+  creditcard: CreditCard,
+  sparkles: Sparkles,
+  circledollarsign: CircleDollarSign,
+  cash: Coins,
+  bank: Landmark,
+  upi: Smartphone,
+}
+
+export function getLucideIcon(iconOrName?: string): LucideIcon {
+  if (!iconOrName) return Tag
+  const clean = iconOrName.trim()
+  if (EMOJI_TO_LUCIDE[clean]) {
+    return EMOJI_TO_LUCIDE[clean]
+  }
+  const normalized = clean.toLowerCase().replace(/[^a-z0-9]/g, '')
+  if (NAME_TO_LUCIDE[normalized]) {
+    return NAME_TO_LUCIDE[normalized]
+  }
+  return Tag
+}
+
+export interface AppIconProps extends LucideProps {
+  name?: string
+}
+
+export function AppIcon({ name, ...props }: AppIconProps) {
+  const IconComponent = getLucideIcon(name)
+  return <IconComponent {...props} />
+}

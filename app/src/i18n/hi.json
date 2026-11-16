@@ -1,0 +1,134 @@
+{
+  "app": { "name": "हिसाब", "tagline": "पैसा आया, पैसा गया — सब एक जगह, अपनी भाषा में।" },
+  "nav": { "home": "होम", "entries": "एंट्री", "udhaar": "उधार", "more": "और", "add": "जोड़ें", "reports": "रिपोर्ट", "categories": "श्रेणी", "wallets": "खाते", "bin": "कचरा पेटी", "settings": "सेटिंग" },
+  "act": {
+    "in": "पैसा आया", "out": "पैसा गया", "inShort": "+ पैसा आया", "outShort": "− पैसा गया",
+    "save": "सेव करें", "cancel": "रहने दें", "undo": "वापस लें", "edit": "बदलें", "delete": "हटाएं", "restore": "वापस लाएं",
+    "next": "आगे", "back": "पीछे", "done": "हो गया", "skip": "छोड़ें", "seeAll": "सब देखें", "filter": "छांटें",
+    "clear": "सब हटाएं", "share": "भेजें", "call": "कॉल", "whatsapp": "व्हाट्सऐप", "addDetails": "और जानकारी (ज़रूरी नहीं)",
+    "hideDetails": "जानकारी छुपाएं", "transfer": "पैसा एक खाते से दूसरे में", "add": "जोड़ें", "search": "खोजें",
+    "close": "बंद करें", "apply": "एंट्री दिखाएं", "confirm": "हाँ, करें"
+  },
+  "period": { "today": "आज", "week": "इस हफ़्ते", "month": "इस महीने", "lastMonth": "पिछला महीना", "custom": "अपनी तारीख", "from": "से", "to": "तक" },
+  "hero": {
+    "in": "पैसा आया", "out": "पैसा गया", "left": "बचा",
+    "more": "{prev} से {amount} ज़्यादा बचा", "less": "{prev} से {amount} कम बचा", "same": "{prev} जितना ही बचा",
+    "prev_today": "कल", "prev_week": "पिछले हफ़्ते", "prev_month": "पिछले महीने", "prev_lastMonth": "उससे पहले के महीने", "prev_custom": "पिछली अवधि"
+  },
+  "home": {
+    "incomeCategories": "पैसा आया",
+    "noIncomeCats": "अभी तक कोई आमदनी श्रेणी नहीं है",
+    "wallets": "आपका पैसा", "udhaarTitle": "उधार", "toGet": "लेना है", "toGive": "देना है",
+    "fromPeople": "{count, plural, =0 {किसी से नहीं} other {# लोगों से}}",
+    "toPeople": "{count, plural, =0 {किसी को नहीं} other {# लोगों को}}",
+    "cashflow": "Money In vs Money Out", "whereSpent": "खर्चा कहाँ गया", "rest": "बाकी",
+    "netWorth": "कुल हैसियत", "youHave": "आपके पास", "youOwe": "आपको देना है", "recent": "हाल की एंट्री",
+    "setOpening": "कुल हैसियत देखने के लिए शुरुआती बैलेंस डालें", "setNow": "अभी डालें",
+    "emptyTitle": "पहली एंट्री डालिए", "emptyBody": "पैसा आए तो हरा बटन दबाएं, पैसा जाए तो लाल।",
+    "offline": "इंटरनेट नहीं है — एंट्री इसी फ़ोन में सेव हो रही हैं", "pendingSync": "{count} एंट्री सिंक होनी बाकी"
+  },
+  "add": {
+    "titleIn": "पैसा आया", "titleOut": "पैसा गया", "amount": "कितने पैसे?", "speak": "बोलें",
+    "listening": "सुन रहे हैं… जैसे बोलें \"500 का सामान खरीदा\"", "voiceUnsupported": "इस ब्राउज़र में बोलकर एंट्री नहीं हो सकती। कृपया रकम टाइप करें।",
+    "pickCategory": "किस लिए?", "note": "नोट", "notePh": "जैसे गुप्ता ट्रेडर्स का बिल", "party": "व्यक्ति", "partyRequired": "उधार के लिए व्यक्ति चुनें",
+    "wallet": "किस खाते से / में", "date": "तारीख", "photo": "बिल की फ़ोटो", "addPhoto": "फ़ोटो लें / जोड़ें", "removePhoto": "फ़ोटो हटाएं",
+    "tags": "टैग", "tagsPh": "जैसे दिवाली, दुकान 2", "onCreditIn": "पैसा अभी नहीं मिला — उधार पर बेचा", "onCreditOut": "पैसा अभी नहीं दिया — उधार पर लिया",
+    "saved": "सेव हो गया", "updated": "बदल गया", "enterAmount": "पहले नंबर पैड से रकम डालें", "voiceHeard": "सुना: \"{text}\"",
+    "voiceCheck": "जाँच कर सेव करें", "editTitle": "एंट्री बदलें", "history": "{count} बार बदली गई",
+    "moreCategories": "श्रेणी बदलें"
+  },
+  "party": {
+    "pick": "व्यक्ति चुनें", "new": "नया व्यक्ति", "name": "नाम", "namePh": "जैसे रमेश गुप्ता", "phone": "फ़ोन (ज़रूरी नहीं)",
+    "searchPh": "नाम खोजें", "type": { "customer": "ग्राहक", "supplier": "सप्लायर", "worker": "कारीगर", "lender": "उधार देने वाला", "other": "अन्य" },
+    "theyOwe": "आपको देंगे", "youOwe": "आप देंगे", "settled": "हिसाब बराबर", "paisaMila": "पैसा मिला", "paisaDiya": "पैसा दिया",
+    "runningBalance": "बाकी", "since": "सबसे पुराना {days, plural, =0 {आज} other {# दिन पहले}}",
+    "reminder": "नमस्ते {name} जी, {business} का {amount} बाकी है। कृपया जल्द भुगतान करें। धन्यवाद।",
+    "noEntries": "इस व्यक्ति के साथ अभी कोई एंट्री नहीं", "udhaarGivenSale": "उधार पर बेचा", "udhaarTakenBuy": "उधार पर लिया"
+  },
+  "udhaar": { "title": "उधार", "toGet": "लेना है", "toGive": "देना है", "emptyGet": "किसी से पैसा लेना बाकी नहीं", "emptyGive": "किसी का पैसा देना बाकी नहीं", "giveUdhaar": "उधार दिया", "takeUdhaar": "उधार लिया", "all": "सभी लोग" },
+  "entries": {
+    "title": "एंट्री", "summary": "{count} एंट्री · {total}", "searchPh": "नोट, व्यक्ति, श्रेणी खोजें",
+    "dayIn": "आया {amount}", "dayOut": "गया {amount}", "empty": "कोई एंट्री नहीं मिली", "emptyAll": "अभी कोई एंट्री नहीं",
+    "onCredit": "उधार", "transfer": "खाता बदला", "deleteConfirm": "यह एंट्री हटाएं? 30 दिन तक कचरा पेटी में रहेगी।", "deleted": "कचरा पेटी में गई",
+    "dateCol": "तारीख", "typeCol": "प्रकार", "catCol": "श्रेणी", "noteCol": "विवरण / नोट", "walletCol": "खाता", "amountCol": "रकम", "actionsCol": "कार्रवाई",
+    "selectAll": "सभी चुनें", "selectedCount": "{count} चुनी गईं", "selectedTotal": "कुल: {total}",
+    "bulkDelete": "हटाएं ({count})", "bulkDeleteConfirm": "{count} एंट्री कचरा पेटी में भेजें? 30 दिन तक वापस ला सकते हैं।",
+    "bulkDeleted": "{count} एंट्री कचरा पेटी में भेजी गईं",
+    "changeCategory": "श्रेणी बदलें", "chooseNewCategory": "चुनी हुई एंट्री के लिए नई श्रेणी चुनें",
+    "bulkCategoryUpdated": "{count} एंट्री की श्रेणी बदली गई",
+    "exportSelected": "एक्सपोर्ट", "clearSelection": "रद्द करें", "allTypes": "सभी एंट्री", "allTime": "पूरा समय", "edit": "बदलें"
+  },
+  "filter": {
+    "title": "छांटें", "direction": "किस तरह", "both": "दोनों", "dateRange": "तारीख", "category": "श्रेणी", "wallet": "खाता", "party": "व्यक्ति",
+    "tag": "टैग", "amount": "रकम", "min": "कम से कम ₹", "max": "ज़्यादा से ज़्यादा ₹", "credit": "सिर्फ़ उधार", "all": "सब"
+  },
+  "reports": {
+    "title": "रिपोर्ट", "monthly": "महीने का हिसाब", "category": "श्रेणी के हिसाब से", "in": "Money In", "out": "Money Out", "left": "बचा",
+    "share": "भेजें", "pdf": "PDF", "excel": "Excel", "openingTitle": "शुरुआती बैलेंस", "shareText": "{business} — {period}: Money In {in}, Money Out {out}, बचा {left}",
+    "lockedNote": "मुफ़्त प्लान में पिछले 3 महीने दिखते हैं। एक्सपोर्ट और पूरा हिसाब Basic में (ट्रायल चालू है)।", "category_col": "श्रेणी", "amount_col": "रकम", "share_col": "हिस्सा", "entries_col": "एंट्री",
+    "date_col": "तारीख", "type_col": "किस तरह", "wallet_col": "खाता", "party_col": "व्यक्ति", "note_col": "नोट", "debit": "Money Out", "credit": "Money In", "account": "Account"
+  },
+  "cat": {
+    "title": "श्रेणी", "in": "पैसा आया", "out": "पैसा गया", "new": "नई श्रेणी", "name": "नाम", "icon": "चित्र", "color": "रंग",
+    "parent": "किसके अंदर (ज़रूरी नहीं)", "none": "कोई नहीं", "hide": "छुपाएं", "show": "दिखाएं", "hidden": "छुपी हुई", "merge": "इसमें मिलाएं…", "mergeConfirm": "{from} की सब एंट्री {to} में डाल दें?",
+    "mergeDone": "मिला दिया", "special": "उधार", "delete": "श्रेणी हटाएं",
+    "deleteConfirm": "क्या आप वाकई \"{name}\" को हटाना चाहते हैं? यह कचरा पेटी में 30 दिनों के लिए जाएगी।",
+    "deleteWithDataTitle": "श्रेणी बदलें और हटाएं",
+    "hasDataWarning": "\"{name}\" में {count} एंट्री हैं।",
+    "switchInstructions": "इस श्रेणी को हटाने के लिए, कृपया इन एंट्री को किसी अन्य श्रेणी में बदलें:",
+    "noOtherCategories": "एंट्री बदलने के लिए कोई अन्य श्रेणी उपलब्ध नहीं है। कृपया पहले एक नई श्रेणी बनाएं।",
+    "switchAndDelete": "बदलें और श्रेणी हटाएं",
+    "deleteDone": "श्रेणी कचरा पेटी में भेजी गई",
+    "movedToBin": "श्रेणी कचरा पेटी में भेजी गई",
+    "restored": "श्रेणी वापस ला दी गई",
+    "permanentDeleted": "श्रेणी हमेशा के लिए हटा दी गई",
+    "switchAndDeleted": "एंट्री \"{target}\" में बदल दी गईं और \"{name}\" को कचरा पेटी में भेज दिया गया"
+  },
+  "wallet": {
+    "title": "खाते", "transferTitle": "एक खाते से दूसरे में पैसा", "from": "से", "to": "में", "transferNote": "जैसे गल्ले से बैंक में जमा",
+    "opening": "शुरुआती बैलेंस", "assets": "आपकी संपत्ति", "loans": "लोन", "editValue": "कीमत बदलें", "netWorthNote": "ये कीमतें कुल हैसियत में जुड़ती हैं।",
+    "rename": "नाम", "add": "नया खाता", "same": "दो अलग खाते चुनें"
+  },
+  "more": {
+    "title": "और", "language": "भाषा", "numerals": "अंक", "western": "123", "devanagari": "१२३", "pin": "PIN बदलें", "highContrast": "तेज़ रंग (धूप में)",
+    "plan": "प्लान", "free": "मुफ़्त", "basic": "Basic", "pro": "Pro", "trial": "Basic ट्रायल: {days} दिन बाकी",
+    "planNote": "Basic ₹49/महीना या ₹499/साल · Pro ₹149/महीना या ₹1,499/साल। UPI AutoPay से भुगतान लॉन्च पर चालू होगा।",
+    "export": "मेरा पूरा डेटा डाउनलोड करें", "help": "मदद (व्हाट्सऐप)", "lock": "अभी लॉक करें", "business": "दुकान", "phone": "फ़ोन", "team": "टीम",
+    "teamSoon": "हेल्पर और अकाउंटेंट अगले वर्शन में", "sync": "सिंक", "syncStatus": "{count, plural, =0 {सब सिंक हो गया} other {# एंट्री बाकी}}",
+    "syncLocal": "इसी फ़ोन में सेव है। सर्वर जुड़ने पर क्लाउड सिंक चालू होगा।", "reset": "इस फ़ोन से सब डेटा हटाएं", "resetConfirm": "इस फ़ोन की सारी एंट्री हट जाएंगी। पक्का करने के लिए DELETE लिखें।",
+    "demoReset": "डेमो टेस्ट अकाउंट लोड करें", "demoResetDesc": "टेस्टिंग के लिए सैंपल लेनदेन और ग्राहक फिर से लोड करें",
+    "shortcuts": "कीबोर्ड: I = पैसा आया, O = पैसा गया, / = खोजें"
+  },
+  "bin": {
+    "title": "कचरा पेटी (Recycle Bin)", "note": "हटाए गए लेनदेन और श्रेणियां स्थायी रूप से हटने से पहले 30 दिन यहाँ रहते हैं",
+    "empty": "कचरा पेटी खाली है", "emptyBody": "कोई हटाए गए लेनदेन या श्रेणी नहीं मिले",
+    "daysLeft": "{days} दिन बाकी",
+    "emptyBin": "कचरा पेटी खाली करें", "emptyBinConfirm": "क्या आप कचरा पेटी की सभी चीजें हमेशा के लिए हटाना चाहते हैं? यह क्रिया वापस नहीं ली जा सकती।",
+    "emptied": "कचरा पेटी खाली कर दी गई", "all": "सभी", "transactions": "लेनदेन", "categories": "श्रेणियां", "deleteForever": "हमेशा के लिए हटाएं",
+    "recoverMissing": "लापता खोजें", "recoverDone": "लापता {count} श्रेणी कचरा पेटी में वापस लाई गई", "noNewRecovered": "कोई अन्य लापता श्रेणी नहीं मिली",
+    "entryPermanentlyDeleted": "एंट्री हमेशा के लिए हटा दी गई", "categoryPermanentlyDeleted": "श्रेणी हमेशा के लिए हटा दी गई",
+    "searchPh": "हटाए गए आइटम, नोट या रकम से खोजें…",
+    "exportCSV": "CSV एक्सपोर्ट", "printPDF": "प्रिंट / PDF", "tableView": "तालिका दृश्य", "cardsView": "कार्ड दृश्य",
+    "allTypes": "सभी प्रकार", "allDirections": "सभी (Money In / Money Out)", "allExpiry": "सभी अवधियां",
+    "expiringSoon": "जल्द समाप्त होने वाले (< 7 दिन)", "safeExpiry": "7+ दिन बाकी",
+    "colItem": "नाम / विवरण", "colCategory": "श्रेणी", "colType": "श्रेणी", "colDirection": "प्रकार (Money In / Money Out)", "colPaymentType": "प्रकार (Money In / Money Out)", "colAmount": "रकम",
+    "colDeleted": "हटाने की तारीख", "colExpires": "अवधि शेष", "colActions": "क्रियाएं",
+    "selectedCount": "{count} चुने गए", "restoreSelected": "चुने हुए वापस लाएं", "deleteSelected": "हमेशा के लिए हटाएं",
+    "bulkDeleteConfirm": "क्या आप चुने हुए {count} आइटम हमेशा के लिए हटाना चाहते हैं? यह क्रिया वापस नहीं ली जा सकती।",
+    "bulkRestoreDone": "{count} आइटम वापस लाए गए", "bulkDeleteDone": "{count} आइटम हमेशा के लिए हटा दिए गए",
+    "noMatches": "कोई मेल खाने वाला हटा हुआ आइटम नहीं मिला", "clearFilters": "फ़िल्टर हटाएं"
+  },
+  "onb": {
+    "chooseLang": "अपनी भाषा चुनें", "phoneTitle": "आपका मोबाइल नंबर", "phonePh": "10 अंकों का नंबर", "sendOtp": "OTP भेजें", "otpTitle": "OTP डालें",
+    "otpSent": "{phone} पर OTP भेजा", "demoOtp": "डेमो: OTP 123456 डालें (सर्वर जुड़ने पर SMS आएगा)", "wrongOtp": "OTP गलत है। 123456 डालें।",
+    "pinTitle": "4 अंकों का PIN बनाएं", "pinConfirm": "PIN फिर से डालें", "pinMismatch": "PIN मेल नहीं खाया। फिर से डालें।",
+    "bizType": "आपका धंधा क्या है?", "bizName": "दुकान / धंधे का नाम", "bizNamePh": "जैसे रमेश किराना स्टोर",
+    "opening": "गल्ले में अभी कितने पैसे हैं?", "openingHint": "चाहें तो छोड़ दें, बाद में डाल सकते हैं",
+    "guideTitle": "चलिए पहली बिक्री डालें", "guideBody": "हरा \"पैसा आया\" बटन दबाएं।", "start": "शुरू करें",
+    "demoLogin": "एक-क्लिक डेमो लॉगिन", "demoLoginDesc": "किराना दुकान और पूरे बहीखाता डेटा के साथ तुरंत टेस्ट करें",
+    "type": { "kirana": "किराना", "kapda": "कपड़ा / सिलाई", "hardware": "हार्डवेयर", "dairy": "डेयरी", "khana": "खाना / होटल", "seva": "सेवा", "kheti": "खेती", "other": "अन्य" },
+    "invalidPhone": "कृपया 10 अंकों का मोबाइल नंबर डालें"
+  },
+  "lock": { "title": "PIN डालें", "wrong": "PIN गलत है", "forgot": "PIN भूल गए? OTP से खोलें", "demoUnlock": "एक-क्लिक डेमो अनलॉक (PIN: 1234)" },
+  "misc": { "you": "आप", "noCategory": "बिना श्रेणी", "all": "सब", "paise": "रकम", "loading": "लोड हो रहा है…" }
+}

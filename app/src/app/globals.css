@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --apple-bg: #F2F2F7;
+  --apple-card: #FFFFFF;
+  --apple-card-sec: #E5E5EA;
+  --apple-card-tertiary: #FFFFFF;
+  --apple-divider: rgba(60, 60, 67, 0.12);
+  --apple-label: #000000;
+  --apple-secondary-label: #6E6E73;
+  --apple-tertiary-label: #8E8E93;
+  --apple-quaternary-label: #AEAEB2;
+}
+
+:root.dark,
+.dark {
+  --apple-bg: #000000;
+  --apple-card: #1C1C1E;
+  --apple-card-sec: #2C2C2E;
+  --apple-card-tertiary: #3A3A3C;
+  --apple-divider: rgba(84, 84, 88, 0.36);
+  --apple-label: #FFFFFF;
+  --apple-secondary-label: #A1A1A6;
+  --apple-tertiary-label: #787880;
+  --apple-quaternary-label: #545458;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--apple-bg);
+  color: var(--apple-label);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+input, textarea {
+  user-select: auto;
+}
+
+/* iOS-style crisp typography optical tracking */
+.apple-display {
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.apple-large-title {
+  font-size: 34px;
+  line-height: 41px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.apple-title-1 {
+  font-size: 28px;
+  line-height: 34px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.apple-title-2 {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.apple-headline {
+  font-size: 17px;
+  line-height: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.apple-body {
+  font-size: 17px;
+  line-height: 22px;
+  letter-spacing: -0.01em;
+}
+
+.apple-callout {
+  font-size: 16px;
+  line-height: 21px;
+  letter-spacing: -0.005em;
+}
+
+.apple-subhead {
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0em;
+}
+
+.apple-footnote {
+  font-size: 13px;
+  line-height: 18px;
+  letter-spacing: 0.01em;
+}
+
+.apple-caption {
+  font-size: 11px;
+  line-height: 14px;
+  letter-spacing: 0.02em;
+}
+
+/* Apple direct manipulation press feedback */
+.apple-press {
+  transition: transform 120ms cubic-bezier(0.2, 0, 0, 1), opacity 120ms ease;
+  will-change: transform;
+}
+.apple-press:active {
+  transform: scale(0.97);
+  opacity: 0.82;
+}
+
+.apple-press-sm {
+  transition: transform 100ms cubic-bezier(0.2, 0, 0, 1), opacity 100ms ease;
+  will-change: transform;
+}
+.apple-press-sm:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* Apple glass materials */
+.apple-glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.dark .apple-glass {
+  background: rgba(28, 28, 30, 0.78);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Grouped Inset Card */
+.apple-card {
+  background-color: #FFFFFF;
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 2px 6px rgba(0, 0, 0, 0.01);
+}
+
+.dark .apple-card {
+  background-color: #1C1C1E;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* Inset list row divider */
+.apple-divider {
+  border-bottom: 0.5px solid rgba(60, 60, 67, 0.12);
+}
+
+.dark .apple-divider {
+  border-bottom: 0.5px solid rgba(84, 84, 88, 0.36);
+}
+
+/* Tabular nums for clean financial reading */
+.tabular-numbers {
+  font-variant-numeric: tabular-nums;
+}
+
+/* High Contrast Mode */
+.hc {
+  filter: contrast(1.3);
+}
+
+/* Smooth hide scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Hide Next.js floating dev badge */
+nextjs-portal,
+[data-nextjs-toast],
+[data-nextjs-dev-overlay-badge],
+#nextjs-dev-tools-badge {
+  display: none !important;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
