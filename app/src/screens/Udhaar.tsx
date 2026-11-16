@@ -84,7 +84,7 @@ export function Udhaar() {
       </div>
 
       {/* Apple Segmented Control */}
-      <div className="w-full">
+      <div className="w-full sm:max-w-md">
         <AppleSegmentedControl
           value={tab}
           onChange={setTab}
@@ -243,7 +243,7 @@ export function Udhaar() {
       {settled.length > 0 && (
         <div className="pt-2">
           <div className="mb-2 flex items-center gap-1.5 px-1">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6]">
+            <h2 className="text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6]">
               {t('party.settled') || 'Settled Accounts'}
             </h2>
           </div>

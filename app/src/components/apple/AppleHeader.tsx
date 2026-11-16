@@ -38,16 +38,21 @@ export function AppleHeader({
     window.addEventListener('online', on)
     window.addEventListener('offline', off)
 
-    try {
-      const stored = localStorage.getItem('hisaab_user_name')
-      if (stored) setUserName(stored)
-    } catch {
-      /* ignore */
+    const syncUser = () => {
+      try {
+        const stored = localStorage.getItem('hisaab_user_name')
+        if (stored) setUserName(stored)
+      } catch {
+        /* ignore */
+      }
     }
+    syncUser()
+    window.addEventListener('hisaab_user_updated', syncUser)
 
     return () => {
       window.removeEventListener('online', on)
       window.removeEventListener('offline', off)
+      window.removeEventListener('hisaab_user_updated', syncUser)
     }
   }, [])
 
@@ -116,10 +121,10 @@ export function AppleHeader({
             <span>{currentLang === 'hi' ? 'English' : 'हिंदी'}</span>
           </button>
 
-          {/* Profile Pill on Right Side (Avatar only, no text) */}
+          {/* Profile Pill on Right Side (Avatar only on desktop; on mobile the bottom tab bar has the profile button) */}
           <Link
             href="/more"
-            className="apple-press flex items-center justify-center rounded-full p-0.5 transition-transform hover:scale-105 active:scale-95"
+            className="apple-press hidden md:flex items-center justify-center rounded-full p-0.5 transition-transform hover:scale-105 active:scale-95"
             title={`${businessName} (${userName}) — ${t('nav.more') || 'Profile & Settings'}`}
             aria-label={t('nav.more') || 'Profile & Settings'}
           >

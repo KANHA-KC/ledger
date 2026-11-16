@@ -18,10 +18,10 @@ import {
   Paperclip,
   ArrowLeftRight,
   Check,
-  User,
   ArrowDownLeft,
   ArrowUpRight,
   Calendar,
+  ChevronDown,
 } from 'lucide-react'
 import { AppIcon } from '../components/AppIcon'
 import { useData, useToast } from '../store'
@@ -32,6 +32,7 @@ import { TranslitInput } from '../components/TranslitInput'
 import { downloadEntriesCSV, printEntries } from './reportUtils'
 import { saveTxn, softDelete, undelete } from '../db/ledger'
 import type { Txn } from '../db/types'
+import { EntryRow } from '../components/EntryRow'
 
 type SortField = 'date' | 'category' | 'note' | 'amount'
 type SortDir = 'asc' | 'desc'
@@ -231,13 +232,13 @@ export function Entries() {
       remove: () => setF({ ...f, wallets: f.wallets.filter((x) => x !== id) }),
     })
   })
-  f.parties.forEach((id) =>
+  f.parties.forEach((id) => {
+    const p = maps.parties.get(id)
     chips.push({
-      lucideIcon: User,
-      label: maps.parties.get(id)?.name ?? '',
+      label: p ? p.name.replace(/\s*\([^)]*\)$/, '').trim() : '',
       remove: () => setF({ ...f, parties: f.parties.filter((x) => x !== id) }),
     })
-  )
+  })
   f.tags.forEach((tg) =>
     chips.push({
       label: `# ${tg}`,
@@ -298,102 +299,164 @@ export function Entries() {
         </div>
       </div>
 
-      {/* Quick Direction Tabs & Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
-        <div className="flex items-center gap-1 p-1 bg-black/[0.05] dark:bg-white/[0.08] rounded-xl self-start">
+      {/* Search & Filter Toolbar: Native Mobile Row + Desktop Unified Row */}
+      <div className="flex flex-col md:flex-row md:items-center gap-2">
+        {/* Row 1 on Mobile: Search input + Filter button */}
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <div className="relative flex-1 md:flex-initial md:w-80 lg:w-96 min-w-0">
+            <TranslitInput
+              inputRef={searchRef}
+              value={f.q ?? ''}
+              onChange={(q) => setF({ ...f, q: q || undefined })}
+              placeholder={t('entries.searchPh') || 'Search note, person, category...'}
+            />
+          </div>
+
+          {/* Direction Toggle on Desktop: immediately to the right of search */}
+          <div className="hidden md:flex items-center h-[46px] p-1 bg-black/[0.05] dark:bg-white/[0.08] rounded-xl shrink-0">
+            <button
+              type="button"
+              onClick={() => setF({ ...f, dir: undefined })}
+              className={`h-full px-3 text-xs font-bold rounded-lg transition-colors ${
+                !f.dir
+                  ? 'bg-white text-neutral-900 shadow-sm dark:bg-[#2C2C2E] dark:text-white'
+                  : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+              }`}
+            >
+              {t('filter.both') || 'Both'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setF({ ...f, dir: 'in' })}
+              className={`h-full px-3 text-xs font-bold rounded-lg transition-colors ${
+                f.dir === 'in'
+                  ? 'bg-[#34C759] text-white shadow-sm'
+                  : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+              }`}
+            >
+              ↓ {t('act.in') || 'Money In'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setF({ ...f, dir: 'out' })}
+              className={`h-full px-3 text-xs font-bold rounded-lg transition-colors ${
+                f.dir === 'out'
+                  ? 'bg-[#FF3B30] text-white shadow-sm'
+                  : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+              }`}
+            >
+              ↑ {t('act.out') || 'Money Out'}
+            </button>
+          </div>
+
+          {/* Filter Button on Mobile (visible only on mobile in row 1) - Invariant fixed width */}
           <button
             type="button"
-            onClick={() => setF({ ...f, dir: undefined })}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
-              !f.dir
-                ? 'bg-white text-neutral-900 shadow-sm dark:bg-[#2C2C2E] dark:text-white'
-                : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+            onClick={() => setFilterOpen(true)}
+            className={`apple-press md:hidden relative flex h-[46px] w-[96px] items-center justify-center gap-1.5 rounded-xl text-xs font-bold transition-colors shrink-0 ${
+              activeCount(f) > 0
+                ? 'bg-[#007AFF] text-white shadow-md'
+                : 'border border-black/[0.08] bg-white text-neutral-800 shadow-sm hover:bg-neutral-50 dark:border-white/[0.1] dark:bg-[#1C1C1E] dark:text-neutral-200'
             }`}
           >
-            {t('filter.both') || 'All'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setF({ ...f, dir: 'in' })}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
-              f.dir === 'in'
-                ? 'bg-white text-[#1C7430] shadow-sm dark:bg-[#2C2C2E] dark:text-[#30D158]'
-                : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
-            }`}
-          >
-            ↓ {t('act.in') || 'Money In'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setF({ ...f, dir: 'out' })}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
-              f.dir === 'out'
-                ? 'bg-white text-[#D70015] shadow-sm dark:bg-[#2C2C2E] dark:text-[#FF453A]'
-                : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
-            }`}
-          >
-            ↑ {t('act.out') || 'Money Out'}
+            <SlidersHorizontal className="h-4 w-4 shrink-0" />
+            <span>{t('act.filter') || 'Filter'}</span>
+            {activeCount(f) > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF3B30] px-1 text-[10px] font-bold text-white shadow-md ring-2 ring-white dark:ring-[#1C1C1E]">
+                {activeCount(f)}
+              </span>
+            )}
           </button>
         </div>
 
-        {/* Quick Date Shortcuts */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-          {(['today', 'week', 'month'] as const).map((p) => {
-            const r = periodRange(p)
-            const isActive = f.from === r.from && f.to === r.to
-            return (
-              <button
-                key={p}
-                type="button"
-                onClick={() => {
-                  if (isActive) setF({ ...f, from: undefined, to: undefined })
-                  else setF({ ...f, from: r.from, to: r.to })
-                }}
-                className={`apple-press px-2.5 py-1 text-xs font-semibold rounded-lg border transition-all ${
-                  isActive
-                    ? 'border-[#007AFF] bg-[#007AFF]/10 text-[#007AFF]'
-                    : 'border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#1C1C1E] text-neutral-600 dark:text-neutral-400'
-                }`}
-              >
-                {t(`period.${p}`) || p}
-              </button>
-            )
-          })}
+        {/* Row 2 on Mobile (scrollable horizontal strip) / Right side on Desktop */}
+        <div className="flex items-center justify-between md:justify-end gap-2 overflow-x-auto no-scrollbar pb-1 md:pb-0 shrink-0">
+          {/* Direction Toggle on Mobile (visible only on mobile) */}
+          <div className="flex md:hidden items-center h-[42px] p-1 bg-black/[0.05] dark:bg-white/[0.08] rounded-xl shrink-0">
+            <button
+              type="button"
+              onClick={() => setF({ ...f, dir: undefined })}
+              className={`h-full px-3 text-xs font-bold rounded-lg transition-colors ${
+                !f.dir
+                  ? 'bg-white text-neutral-900 shadow-sm dark:bg-[#2C2C2E] dark:text-white'
+                  : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+              }`}
+            >
+              {t('filter.both') || 'Both'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setF({ ...f, dir: 'in' })}
+              className={`h-full px-3 text-xs font-bold rounded-lg transition-colors ${
+                f.dir === 'in'
+                  ? 'bg-[#34C759] text-white shadow-sm'
+                  : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+              }`}
+            >
+              ↓ {t('act.in') || 'Money In'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setF({ ...f, dir: 'out' })}
+              className={`h-full px-3 text-xs font-bold rounded-lg transition-colors ${
+                f.dir === 'out'
+                  ? 'bg-[#FF3B30] text-white shadow-sm'
+                  : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+              }`}
+            >
+              ↑ {t('act.out') || 'Money Out'}
+            </button>
+          </div>
+
+          {/* Quick Date Shortcuts (Today | Week | Month) */}
+          <div className="flex items-center h-[42px] md:h-[46px] p-1 bg-black/[0.05] dark:bg-white/[0.08] rounded-xl shrink-0">
+            {(['today', 'week', 'month'] as const).map((p) => {
+              const r = periodRange(p)
+              const isActive = f.from === r.from && f.to === r.to
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => {
+                    if (isActive) setF({ ...f, from: undefined, to: undefined })
+                    else setF({ ...f, from: r.from, to: r.to })
+                  }}
+                  className={`h-full px-3 text-xs font-bold rounded-lg transition-colors ${
+                    isActive
+                      ? 'bg-[#007AFF] text-white shadow-sm'
+                      : 'text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
+                  }`}
+                >
+                  {t(`period.${p}`) || p}
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Filter Button on Desktop - Invariant fixed width to prevent horizontal layout shift */}
+          <button
+            type="button"
+            onClick={() => setFilterOpen(true)}
+            className={`apple-press hidden md:flex relative h-[46px] w-[96px] items-center justify-center gap-1.5 rounded-xl text-xs font-bold transition-colors shrink-0 ${
+              activeCount(f) > 0
+                ? 'bg-[#007AFF] text-white shadow-md'
+                : 'border border-black/[0.08] bg-white text-neutral-800 shadow-sm hover:bg-neutral-50 dark:border-white/[0.1] dark:bg-[#1C1C1E] dark:text-neutral-200'
+            }`}
+          >
+            <SlidersHorizontal className="h-4 w-4 shrink-0" />
+            <span>{t('act.filter') || 'Filter'}</span>
+            {activeCount(f) > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FF3B30] px-1 text-[10px] font-bold text-white shadow-md ring-2 ring-white dark:ring-[#1C1C1E]">
+                {activeCount(f)}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Search Bar & Filter Button */}
-      <div className="flex gap-2">
-        <div className="relative flex-1">
-          <TranslitInput
-            inputRef={searchRef}
-            value={f.q ?? ''}
-            onChange={(q) => setF({ ...f, q: q || undefined })}
-            placeholder={t('entries.searchPh') || 'Search notes, parties, tags...'}
-          />
-        </div>
-        <button
-          type="button"
-          onClick={() => setFilterOpen(true)}
-          className={`apple-press relative flex h-[46px] items-center gap-2 rounded-xl px-4 text-sm font-bold transition-all ${
-            activeCount(f) > 0
-              ? 'bg-[#007AFF] text-white shadow-md'
-              : 'border border-black/[0.08] bg-white text-neutral-800 shadow-sm hover:bg-neutral-50 dark:border-white/[0.1] dark:bg-[#1C1C1E] dark:text-neutral-200'
-          }`}
-        >
-          <SlidersHorizontal className="h-4 w-4" />
-          <span>{t('act.filter') || 'Filter'}</span>
-          {activeCount(f) > 0 && (
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-[10px] font-bold text-[#007AFF]">
-              {activeCount(f)}
-            </span>
-          )}
-        </button>
-      </div>
-
-      {/* Filter Badges Strip */}
+      {/* Filter Badges Strip (Horizontally Scrollable) */}
       {chips.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-nowrap py-0.5">
           {chips.map((c, i) => {
             const IconComp = c.lucideIcon
             return (
@@ -401,7 +464,7 @@ export function Entries() {
                 key={i}
                 type="button"
                 onClick={c.remove}
-                className="apple-press inline-flex h-8 items-center gap-1.5 rounded-full bg-[#007AFF]/10 px-3 text-xs font-semibold text-[#007AFF] hover:bg-[#007AFF]/15"
+                className="apple-press inline-flex h-8 items-center gap-1.5 rounded-full bg-[#007AFF]/10 px-3 text-xs font-semibold text-[#007AFF] hover:bg-[#007AFF]/15 shrink-0"
               >
                 {IconComp && <IconComp className="h-3.5 w-3.5 shrink-0" />}
                 {c.iconName && <AppIcon name={c.iconName} className="h-3.5 w-3.5 shrink-0" />}
@@ -413,7 +476,7 @@ export function Entries() {
           <button
             type="button"
             onClick={() => setF(emptyFilter())}
-            className="apple-press ml-1 text-xs font-semibold text-neutral-400 hover:text-neutral-700"
+            className="apple-press ml-1 text-xs font-semibold text-neutral-400 hover:text-neutral-700 shrink-0"
           >
             {t('act.clear') || 'Clear all'}
           </button>
@@ -448,11 +511,22 @@ export function Entries() {
           />
         </div>
       ) : (
-        <div className="apple-card overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[700px] border-collapse text-left">
+        <>
+          {/* Mobile Native View (< md screens): iOS Grouped Card List with EntryRow */}
+          <div className="md:hidden">
+            <div className="apple-card divide-y divide-black/[0.04] dark:divide-white/[0.06] overflow-hidden shadow-sm">
+              {list.map((x) => (
+                <EntryRow key={x.id} t={x} showDate />
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop View (>= md screens): Full Tabular Data Grid with Sortable Columns */}
+          <div className="hidden md:block apple-card overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[700px] border-collapse text-left">
               <thead>
-                <tr className="border-b border-black/[0.08] dark:border-white/[0.08] bg-neutral-50/80 dark:bg-neutral-800/60 text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6]">
+                <tr className="border-b border-black/[0.08] dark:border-white/[0.08] bg-neutral-50/80 dark:bg-neutral-800/60 text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6]">
                   {/* Master Checkbox */}
                   <th className="w-12 px-4 py-3 text-center">
                     <input
@@ -470,7 +544,7 @@ export function Entries() {
                     <button
                       type="button"
                       onClick={() => handleSort('date')}
-                      className="group flex items-center text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6] hover:text-neutral-900 dark:hover:text-white"
+                      className="group flex items-center text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6] hover:text-neutral-900 dark:hover:text-white"
                     >
                       <span>{t('entries.dateCol') || 'Date'}</span>
                       {renderSortIndicator('date')}
@@ -487,7 +561,7 @@ export function Entries() {
                     <button
                       type="button"
                       onClick={() => handleSort('category')}
-                      className="group flex items-center text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6] hover:text-neutral-900 dark:hover:text-white"
+                      className="group flex items-center text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6] hover:text-neutral-900 dark:hover:text-white"
                     >
                       <span>{t('entries.catCol') || 'Category'}</span>
                       {renderSortIndicator('category')}
@@ -499,7 +573,7 @@ export function Entries() {
                     <button
                       type="button"
                       onClick={() => handleSort('note')}
-                      className="group flex items-center text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6] hover:text-neutral-900 dark:hover:text-white"
+                      className="group flex items-center text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6] hover:text-neutral-900 dark:hover:text-white"
                     >
                       <span>{t('entries.noteCol') || 'Description / Note'}</span>
                       {renderSortIndicator('note')}
@@ -511,7 +585,7 @@ export function Entries() {
                     <button
                       type="button"
                       onClick={() => handleSort('amount')}
-                      className="group ml-auto flex items-center text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6] hover:text-neutral-900 dark:hover:text-white"
+                      className="group ml-auto flex items-center text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6] hover:text-neutral-900 dark:hover:text-white"
                     >
                       <span>{t('entries.amountCol') || 'Amount'}</span>
                       {renderSortIndicator('amount')}
@@ -608,9 +682,8 @@ export function Entries() {
                           )}
                           <div className="flex items-center gap-1.5 flex-wrap">
                             {p && (
-                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 dark:text-amber-400 bg-amber-500/10 rounded px-1.5 py-0.2">
-                                <User className="h-3 w-3 inline text-amber-700 dark:text-amber-400" />
-                                <span>{p.name}</span>
+                              <span className="inline-flex items-center text-[11px] font-semibold text-amber-800 dark:text-amber-400 bg-amber-500/10 rounded px-1.5 py-0.2">
+                                <span>{p.name.replace(/\s*\([^)]*\)$/, '').trim()}</span>
                               </span>
                             )}
                             {x.tags && x.tags.length > 0 && (
@@ -671,6 +744,7 @@ export function Entries() {
             </table>
           </div>
         </div>
+        </>
       )}
 
       {/* Bulk Action Floating Toolbar */}
@@ -723,10 +797,11 @@ export function Entries() {
             type="button"
             onClick={() => setDeleteConfirmOpen(true)}
             disabled={isProcessing}
-            className="apple-press flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-900/50 text-xs font-semibold text-[#FF3B30]"
+            className="apple-press flex items-center justify-center p-2 rounded-xl bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-900/50 text-[#FF3B30] transition-colors"
+            title={t('entries.bulkDelete', { count: selectedIds.size }) || `Delete (${selectedIds.size})`}
+            aria-label={t('entries.bulkDelete', { count: selectedIds.size }) || `Delete (${selectedIds.size})`}
           >
-            <Trash2 className="h-3.5 w-3.5" />
-            <span>{t('entries.bulkDelete', { count: selectedIds.size }) || `Delete (${selectedIds.size})`}</span>
+            <Trash2 className="h-4 w-4" />
           </button>
 
           {/* Cancel / Deselect */}
@@ -1051,23 +1126,6 @@ function FilterSheet({
           </div>
         </Field>
 
-        <Field label={t('filter.wallet') || 'Wallets'}>
-          <div className="flex flex-wrap gap-1.5">
-            {ctx.accounts
-              .filter((a) => ['cash', 'bank', 'upi'].includes(a.kind))
-              .map((a) => (
-                <Chip
-                  key={a.id}
-                  active={f.wallets.includes(a.id)}
-                  onClick={() => toggle('wallets', a.id)}
-                >
-                  <AppIcon name={a.icon} className="h-3.5 w-3.5 shrink-0" />
-                  <span>{ctx.nm(a)}</span>
-                </Chip>
-              ))}
-          </div>
-        </Field>
-
         {ctx.parties.length > 0 && (
           <Field label={t('filter.party') || 'Parties'}>
             <div className="flex flex-wrap gap-1.5">
@@ -1078,8 +1136,7 @@ function FilterSheet({
                   color="#FF9500"
                   onClick={() => toggle('parties', p.id)}
                 >
-                  <User className="h-3.5 w-3.5 shrink-0" />
-                  <span>{p.name}</span>
+                  <span>{p.name.replace(/\s*\([^)]*\)$/, '').trim()}</span>
                 </Chip>
               ))}
             </div>

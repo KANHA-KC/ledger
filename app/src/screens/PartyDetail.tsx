@@ -92,7 +92,7 @@ export function PartyDetail() {
       {/* Balance & Action Buttons Card */}
       <div className="apple-card p-5">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6]">
+          <span className="text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6]">
             {status}
           </span>
         </div>

@@ -309,7 +309,7 @@ export async function loginWithDemoAccount(forceFresh = false): Promise<Business
     const partyRamesh: Party = {
       id: uuid(),
       businessId: bizId,
-      name: 'Ramesh Kumar (Customer)',
+      name: 'Ramesh Kumar',
       nameAlt: 'रमेश कुमार',
       phone: '9811223344',
       type: 'customer',
@@ -319,7 +319,7 @@ export async function loginWithDemoAccount(forceFresh = false): Promise<Business
     const partySuresh: Party = {
       id: uuid(),
       businessId: bizId,
-      name: 'Suresh Verma (Customer)',
+      name: 'Suresh Verma',
       nameAlt: 'सुरेश वर्मा',
       phone: '9822334455',
       type: 'customer',
@@ -339,7 +339,7 @@ export async function loginWithDemoAccount(forceFresh = false): Promise<Business
     const partyAmit: Party = {
       id: uuid(),
       businessId: bizId,
-      name: 'Amit Sharma (Staff)',
+      name: 'Amit Sharma',
       nameAlt: 'अमित शर्मा',
       phone: '9844556677',
       type: 'worker',

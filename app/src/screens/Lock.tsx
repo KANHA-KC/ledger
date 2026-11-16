@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Lock as LockIcon, ShieldAlert, Zap } from 'lucide-react'
-import { checkPin, setPin, verifyOtp, DEMO_PIN, DEMO_OTP } from '../lib/auth'
+import { checkPin, setPin, verifyOtp, sendOtp, DEMO_PIN, DEMO_OTP } from '../lib/auth'
 import { Btn, inputCls } from '../components/ui'
 import { PinPad } from './PinPad'
 
@@ -70,6 +70,7 @@ export function Lock({
               onClick={() => {
                 setErr('')
                 setMode('otp')
+                sendOtp(phone).catch(() => {})
               }}
             >
               {t('lock.forgot') || 'Forgot Passcode?'}

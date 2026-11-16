@@ -7,7 +7,6 @@ import { useData } from '../store'
 import { setLanguage } from '../i18n'
 import { AppleTabBar } from './apple/AppleTabBar'
 import { AppleHeader } from './apple/AppleHeader'
-import { AppleToast } from './apple/AppleToast'
 
 export function Layout({ children }: { children: ReactNode }) {
   const { t, i18n } = useTranslation()
@@ -40,9 +39,6 @@ export function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[#F2F2F7] text-neutral-900 antialiased dark:bg-black dark:text-white md:flex">
-      {/* Toast Notifications */}
-      <AppleToast />
-
       {/* Navigation (Desktop Sidebar & Mobile Floating Tab Bar) */}
       <AppleTabBar />
 

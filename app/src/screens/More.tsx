@@ -5,10 +5,7 @@ import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { useLiveQuery } from 'dexie-react-hooks'
 import {
-  BarChart3,
   Wallet,
-  Tags,
-  BookOpen,
   Globe,
   Sun,
   Lock,
@@ -22,7 +19,14 @@ import {
   Sparkles,
   Cloud,
   Database,
+  Users,
+  Edit3,
+  Eye,
+  BookOpen,
+  BarChart3,
+  Tags,
 } from 'lucide-react'
+import { ProfileOrgSheet } from '../components/ProfileOrgSheet'
 import { db, getSetting, setSetting } from '../db/db'
 import { useData, useToast } from '../store'
 import { setLanguage } from '../i18n'
@@ -60,6 +64,9 @@ export function More({
   const [lockAsk, setLockAsk] = useState(false)
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const [backupOpen, setBackupOpen] = useState(false)
+  const [profileSheetOpen, setProfileSheetOpen] = useState(false)
+  const [currentUserName, setCurrentUserName] = useState('Dilip Chandravanshi')
+  const [currentUserRole, setCurrentUserRole] = useState<'admin' | 'editor' | 'viewer'>('admin')
   const trialDays = Math.max(0, daysBetween(todayISO(), business.trialEndsAt))
 
   useEffect(() => {
@@ -67,6 +74,19 @@ export function More({
       const th = localStorage.getItem('theme')
       if (th === 'dark') setTheme('dark')
     } catch {}
+
+    const syncUser = () => {
+      try {
+        const storedName = localStorage.getItem('hisaab_user_name') || 'Dilip Chandravanshi'
+        const storedRole =
+          (localStorage.getItem('hisaab_user_role') as 'admin' | 'editor' | 'viewer') || 'admin'
+        setCurrentUserName(storedName)
+        setCurrentUserRole(storedRole)
+      } catch {}
+    }
+    syncUser()
+    window.addEventListener('hisaab_user_updated', syncUser)
+    return () => window.removeEventListener('hisaab_user_updated', syncUser)
   }, [])
 
   const links = [
@@ -87,55 +107,65 @@ export function More({
 
       {/* Business Profile Inset Card */}
       <div className="apple-card p-4">
-        <div className="flex items-center gap-3.5">
-          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-xl font-extrabold text-white shadow-sm ring-2 ring-black/[0.06] dark:ring-white/[0.1]">
-            {business.name.trim() ? business.name.trim().charAt(0).toUpperCase() : 'H'}
-            <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-[#34C759] ring-2 ring-white dark:ring-[#1C1C1E]" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="truncate text-base font-bold text-neutral-900 dark:text-white">
-              {business.name}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+          <div className="flex items-center gap-3.5 min-w-0">
+            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-xl font-extrabold text-white shadow-sm ring-2 ring-black/[0.06] dark:ring-white/[0.1]">
+              {business.name.trim() ? business.name.trim().charAt(0).toUpperCase() : 'H'}
+              <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-[#34C759] ring-2 ring-white dark:ring-[#1C1C1E]" />
             </div>
-            <div className="flex flex-wrap items-center gap-1.5 text-xs text-[#6E6E73] dark:text-[#A1A1A6]">
-              <span className="font-semibold text-neutral-800 dark:text-neutral-200">
-                {typeof window !== 'undefined' ? localStorage.getItem('hisaab_user_name') || 'Dilip Chandravanshi' : 'Dilip Chandravanshi'} · {i18n.language === 'hi' ? 'मालिक (Owner)' : 'Owner'}
-              </span>
-              <span>·</span>
-              <Smartphone className="h-3 w-3" />
-              <span>+91 {business.ownerPhone}</span>
-              <span>·</span>
-              <span className="capitalize">{business.plan} Plan</span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="truncate text-base font-bold text-neutral-900 dark:text-white">
+                  {business.name}
+                </span>
+                {currentUserRole === 'admin' ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/10 px-2 py-0.5 text-[11px] font-bold text-purple-700 dark:text-purple-300 border border-purple-500/20">
+                    <Shield className="h-3 w-3" />
+                    <span>Admin</span>
+                  </span>
+                ) : currentUserRole === 'editor' ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-bold text-[#007AFF] border border-blue-500/20">
+                    <Edit3 className="h-3 w-3" />
+                    <span>Editor (Data Entry)</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-neutral-500/10 px-2 py-0.5 text-[11px] font-bold text-neutral-600 dark:text-neutral-400 border border-neutral-500/20">
+                    <Eye className="h-3 w-3" />
+                    <span>Viewer</span>
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5 text-xs text-[#6E6E73] dark:text-[#A1A1A6]">
+                <span className="font-semibold text-neutral-800 dark:text-neutral-200">
+                  {currentUserName}
+                </span>
+                <span>·</span>
+                <Smartphone className="h-3 w-3" />
+                <span>+91 {business.ownerPhone}</span>
+                <span>·</span>
+                <span className="capitalize">{business.plan} Plan</span>
+              </div>
             </div>
           </div>
+
+          {/* Action button to open Profile & Organization Settings */}
+          <button
+            type="button"
+            onClick={() => setProfileSheetOpen(true)}
+            className="apple-press inline-flex items-center justify-center gap-1.5 rounded-xl border border-black/[0.08] bg-white px-3.5 py-2 text-xs font-bold text-neutral-800 shadow-sm hover:bg-neutral-50 dark:border-white/[0.1] dark:bg-[#2C2C2E] dark:text-white dark:hover:bg-[#3A3A3C] shrink-0"
+          >
+            <Users className="h-4 w-4 text-[#007AFF]" />
+            <span>Profile & Org Roles</span>
+          </button>
         </div>
       </div>
 
-      {/* Shortcuts Grid (Mobile) */}
-      <div className="grid grid-cols-3 gap-2 md:hidden">
-        {links.map((l) => {
-          const Icon = l.icon
-          return (
-            <Link
-              key={l.to}
-              href={l.to}
-              className="apple-press apple-card flex h-20 flex-col items-center justify-center gap-1.5 p-3 text-center transition-all hover:bg-neutral-50 dark:hover:bg-[#2C2C2E]"
-            >
-              <div className={`flex h-8 w-8 items-center justify-center rounded-xl text-white ${l.bg}`}>
-                <Icon className="h-4 w-4" />
-              </div>
-              <span className="text-xs font-bold text-neutral-800 dark:text-neutral-200">
-                {l.label}
-              </span>
-            </Link>
-          )
-        })}
-      </div>
 
       {/* Settings Grid on Desktop: Preferences & Security */}
       <div className="grid gap-4 md:grid-cols-2 items-start">
         {/* Inset Group 1: General & Localization */}
         <div className="apple-card overflow-hidden">
-        <div className="border-b border-black/[0.04] px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#8E8E93] dark:border-white/[0.06] dark:text-[#A1A1A6]">
+        <div className="border-b border-black/[0.04] px-4 py-2 text-[11px] font-semibold text-[#8E8E93] dark:border-white/[0.06] dark:text-[#A1A1A6]">
           {t('more.language') || 'Language & Display'}
         </div>
         <div className="divide-y divide-black/[0.04] dark:divide-white/[0.06]">
@@ -258,7 +288,7 @@ export function More({
 
       {/* Inset Group 2: Security & App Lock */}
       <div className="apple-card overflow-hidden">
-        <div className="border-b border-black/[0.04] px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:border-white/[0.06]">
+        <div className="border-b border-black/[0.04] px-4 py-2 text-[11px] font-semibold text-neutral-400 dark:border-white/[0.06]">
           Security & Access
         </div>
         <div className="divide-y divide-black/[0.04] dark:divide-white/[0.06]">
@@ -278,6 +308,18 @@ export function More({
             chevron
             onClick={() => setLockAsk(true)}
           />
+          <AppleListItem
+            icon={<Users className="h-4 w-4" />}
+            iconBg="bg-[#5856D6]"
+            title={t('more.org') || 'Profile, Company & Team Roles'}
+            subtitle={
+              currentUserRole === 'admin'
+                ? 'Change name, company name, add editors & viewers'
+                : 'View profile and team directory'
+            }
+            chevron
+            onClick={() => setProfileSheetOpen(true)}
+          />
         </div>
       </div>
       </div>
@@ -286,7 +328,7 @@ export function More({
       <div className="grid gap-4 md:grid-cols-2 items-start">
         {/* Inset Group 3: Data & Export */}
         <div className="apple-card overflow-hidden">
-        <div className="border-b border-black/[0.04] px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-neutral-400 dark:border-white/[0.06]">
+        <div className="border-b border-black/[0.04] px-4 py-2 text-[11px] font-semibold text-neutral-400 dark:border-white/[0.06]">
           Data & Backup
         </div>
         <div className="divide-y divide-black/[0.04] dark:divide-white/[0.06]">
@@ -443,6 +485,13 @@ export function More({
 
       {/* WhatsApp Style Google Drive & Local Backup Sheet */}
       <BackupSheet open={backupOpen} onClose={() => setBackupOpen(false)} />
+
+      {/* Profile & Organization Roles Settings Sheet */}
+      <ProfileOrgSheet
+        open={profileSheetOpen}
+        onClose={() => setProfileSheetOpen(false)}
+        business={business}
+      />
     </div>
   )
 }

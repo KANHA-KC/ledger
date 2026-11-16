@@ -7,8 +7,10 @@ import { AppIcon } from '../components/AppIcon'
 import { setLanguage } from '../i18n'
 import { BUSINESS_TYPES, createBusiness } from '../db/seed'
 import type { Business, BusinessType } from '../db/types'
-import { setSetting } from '../db/db'
-import { setPin, verifyOtp } from '../lib/auth'
+import { setSetting, db, claimLocalDataForOrg } from '../db/db'
+import { setPin, verifyOtp, sendOtp } from '../lib/auth'
+import { isCloudEnabled, createOrgCloud } from '../lib/supabase'
+import { triggerSync } from '../lib/sync'
 import { loginWithDemoAccount } from '../lib/demo'
 import { clickFeedback } from '../lib/speak'
 import { Btn, Field, inputCls } from '../components/ui'
@@ -46,13 +48,34 @@ export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
   }
 
   const finish = async (openingRupees: string) => {
+    const bizName = name.trim() || t(`onb.type.${type ?? 'other'}`) || 'Hisaab Store'
+    const bizType = type ?? 'other'
+    const lang = i18n.language === 'en' ? 'en' : 'hi'
+
+    let cloudOrg: { org_id: string; business_id: string } | null = null
+    if (isCloudEnabled()) {
+      try {
+        cloudOrg = await createOrgCloud(bizName, bizName, bizType, lang)
+      } catch (e) {
+        console.warn('[Onboarding] Cloud org creation deferred/offline:', e)
+      }
+    }
+
     const b = await createBusiness({
-      name: name.trim() || t(`onb.type.${type ?? 'other'}`) || 'Hisaab Store',
-      type: type ?? 'other',
+      name: bizName,
+      type: bizType,
       ownerPhone: phone,
-      language: i18n.language === 'en' ? 'en' : 'hi',
+      language: lang,
       openingCash: Math.round(Number(openingRupees || 0) * 100),
     })
+
+    if (cloudOrg) {
+      b.orgId = cloudOrg.org_id
+      await db.businesses.update(b.id, { orgId: cloudOrg.org_id })
+      await claimLocalDataForOrg(cloudOrg.org_id, b.id)
+      triggerSync(b.id)
+    }
+
     await setSetting('activeBusiness', b.id)
     await setSetting('guide', true)
     onDone(b)
@@ -176,12 +199,17 @@ export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
   if (step === 'phone') {
     return wrap(
       <form
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault()
           const p = phone.replace(/\D/g, '')
           if (p.length !== 10) return setErr(t('onb.invalidPhone') || 'Enter valid 10-digit number')
           setErr('')
-          setStep('otp')
+          const res = await sendOtp(p)
+          if (res.success) {
+            setStep('otp')
+          } else {
+            setErr(res.error || 'Failed to send OTP')
+          }
         }}
       >
         <div className="mb-5">

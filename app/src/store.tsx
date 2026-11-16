@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useTranslation } from 'react-i18next'
-import { Check, RotateCcw } from 'lucide-react'
+import { Check, Info, RotateCcw } from 'lucide-react'
 import { db } from './db/db'
 import type { Account, Business, Category, LedgerLine, Party, Txn } from './db/types'
 import { computeBalances, restoreVersion, hardDelete, type Balances } from './db/ledger'
@@ -37,6 +37,7 @@ export function DataProvider({ business, children }: { business: Business; child
   const { i18n } = useTranslation()
   const lang = (i18n.language === 'en' ? 'en' : 'hi') as 'hi' | 'en'
   const id = business.id
+  const liveBusiness = useLiveQuery(() => db.businesses.get(id), [id]) || business
   const accountsRaw = useLiveQuery(() => db.accounts.where('businessId').equals(id).toArray(), [id])
   const categoriesRaw = useLiveQuery(() => db.categories.where('businessId').equals(id).sortBy('sort'), [id])
   const parties = useLiveQuery(() => db.parties.where('businessId').equals(id).toArray(), [id])
@@ -51,7 +52,7 @@ export function DataProvider({ business, children }: { business: Business; child
     const activeCategories = categoriesRaw.filter((c) => !c.deletedAt)
     const deletedCategories = categoriesRaw.filter((c) => !!c.deletedAt)
     return {
-      business,
+      business: liveBusiness,
       accounts,
       categories: activeCategories,
       deletedCategories,
@@ -69,7 +70,7 @@ export function DataProvider({ business, children }: { business: Business; child
       lang,
       nm: (o) => (o ? (lang === 'hi' ? o.name_hi : o.name_en) : ''),
     }
-  }, [business, accountsRaw, categoriesRaw, parties, txns, lines, lang])
+  }, [liveBusiness, accountsRaw, categoriesRaw, parties, txns, lines, lang])
 
   if (!value) {
     return (
@@ -126,19 +127,25 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {toast && (
         <div
-          className="pointer-events-none fixed top-4 inset-x-0 z-50 flex justify-center px-4 animate-in fade-in slide-in-from-top-4 duration-200"
+          className="pointer-events-none fixed bottom-[78px] md:bottom-6 inset-x-0 z-50 flex justify-center px-4 animate-in fade-in slide-in-from-bottom-4 duration-200"
           role="status"
           aria-live="polite"
         >
-          <div className="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-full border border-black/10 bg-neutral-900/90 px-4 py-2.5 text-white shadow-2xl backdrop-blur-2xl dark:border-white/20 dark:bg-neutral-800/90">
-            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#34C759] text-white">
-              <Check className="h-3.5 w-3.5 stroke-[3]" />
-            </div>
-            <span className="flex-1 truncate text-sm font-semibold tracking-tight">{toast.text}</span>
+          <div className="pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-full border border-white/20 bg-neutral-900/65 px-4 py-2.5 text-white shadow-[0_12px_36px_rgba(0,0,0,0.28),inset_0_1px_1px_rgba(255,255,255,0.2)] backdrop-blur-2xl backdrop-saturate-150 transition-all dark:border-white/15 dark:bg-black/60">
+            {toast.tone === 'info' ? (
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#007AFF] text-white shadow-sm">
+                <Info className="h-3.5 w-3.5 stroke-[2.5]" />
+              </div>
+            ) : (
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#34C759] text-white shadow-sm">
+                <Check className="h-3.5 w-3.5 stroke-[3]" />
+              </div>
+            )}
+            <span className="flex-1 truncate text-sm font-semibold tracking-tight text-white drop-shadow-sm">{toast.text}</span>
             {toast.undo && (
               <button
                 type="button"
-                className="apple-press relative flex shrink-0 items-center gap-1.5 overflow-hidden rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white hover:bg-white/30"
+                className="apple-press relative flex shrink-0 items-center gap-1.5 overflow-hidden rounded-full border border-white/20 bg-white/20 px-3 py-1 text-xs font-bold text-white shadow-sm backdrop-blur-md hover:bg-white/30"
                 onClick={async () => {
                   await toast.undo?.()
                   setToast(null)
@@ -148,7 +155,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 <span>{t('act.undo') || 'Undo'}</span>
                 <span
                   key={toast.id}
-                  className="absolute bottom-0 left-0 h-0.5 bg-white/70"
+                  className="absolute bottom-0 left-0 h-0.5 bg-white/80"
                   style={{ animation: 'shrink 10s linear forwards' }}
                 />
               </button>

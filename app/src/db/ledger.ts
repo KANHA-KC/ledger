@@ -1,9 +1,10 @@
 // Double-entry layer. The user only ever sees "Paisa Aaya / Paisa Gaya"; every entry is
 // also written as balanced ledger lines so balances, udhaar and net worth come from one place.
 
-import { db, uuid } from './db'
+import { db, queueOutbox, uuid } from './db'
 import type { Account, AccountKind, Category, LedgerLine, Txn, TxnSnapshot } from './types'
 import { addDaysISO, todayISO } from '../lib/format'
+import { triggerSync } from '../lib/sync'
 
 type SysAccounts = Record<'receivable' | 'payable' | 'income' | 'expense' | 'equity', string>
 
@@ -68,7 +69,9 @@ export async function saveTxn(t: Txn): Promise<Txn | undefined> {
     await db.txns.put(next)
     await db.lines.where('txnId').equals(t.id).delete()
     if (!next.deletedAt) await db.lines.bulkAdd(buildLines(next, cat, sys))
+    await queueOutbox('txns', 'upsert', next.businessId, next)
   })
+  triggerSync(t.businessId)
   return prev
 }
 
@@ -76,21 +79,29 @@ export async function saveTxn(t: Txn): Promise<Txn | undefined> {
 export async function restoreVersion(prev: Txn) {
   const sys = await systemAccounts(prev.businessId)
   const cat = prev.categoryId ? await db.categories.get(prev.categoryId) : undefined
-  await db.transaction('rw', db.txns, db.lines, async () => {
+  await db.transaction('rw', db.txns, db.lines, db.outbox, async () => {
     await db.txns.put({ ...prev, syncStatus: 'pending' })
     await db.lines.where('txnId').equals(prev.id).delete()
     if (!prev.deletedAt) await db.lines.bulkAdd(buildLines(prev, cat, sys))
+    await queueOutbox('txns', 'upsert', prev.businessId, prev)
   })
+  triggerSync(prev.businessId)
 }
 
 /** Hard delete — only used by Undo of a brand-new entry and by the 30-day bin purge. */
 export async function hardDelete(id: string) {
-  await db.transaction('rw', db.txns, db.lines, db.photos, async () => {
+  let bizId: string | undefined
+  await db.transaction('rw', db.txns, db.lines, db.photos, db.outbox, async () => {
     const t = await db.txns.get(id)
-    if (t?.photoId) await db.photos.delete(t.photoId)
-    await db.txns.delete(id)
-    await db.lines.where('txnId').equals(id).delete()
+    if (t) {
+      bizId = t.businessId
+      if (t.photoId) await db.photos.delete(t.photoId)
+      await db.txns.delete(id)
+      await db.lines.where('txnId').equals(id).delete()
+      await queueOutbox('txns', 'delete', t.businessId, { id, deleted_at: new Date().toISOString() })
+    }
   })
+  if (bizId) triggerSync(bizId)
 }
 
 /** Soft delete → goes to the bin for 30 days. */
@@ -110,19 +121,29 @@ export async function undelete(id: string) {
 export async function softDeleteCategory(id: string) {
   const c = await db.categories.get(id)
   if (!c) return
-  await db.categories.update(id, { deletedAt: new Date().toISOString() })
+  const now = new Date().toISOString()
+  await db.categories.update(id, { deletedAt: now, updatedAt: now })
+  await queueOutbox('categories', 'upsert', c.businessId, { ...c, deletedAt: now, updatedAt: now })
+  triggerSync(c.businessId)
 }
 
 /** Restore a category from the bin. */
 export async function undeleteCategory(id: string) {
   const c = await db.categories.get(id)
   if (!c) return
-  await db.categories.update(id, { deletedAt: null })
+  const now = new Date().toISOString()
+  await db.categories.update(id, { deletedAt: null, updatedAt: now })
+  await queueOutbox('categories', 'upsert', c.businessId, { ...c, deletedAt: null, updatedAt: now })
+  triggerSync(c.businessId)
 }
 
 /** Hard delete a category permanently. */
 export async function hardDeleteCategory(id: string) {
+  const c = await db.categories.get(id)
+  if (!c) return
   await db.categories.delete(id)
+  await queueOutbox('categories', 'delete', c.businessId, { id, deleted_at: new Date().toISOString() })
+  triggerSync(c.businessId)
 }
 
 export async function purgeBin() {

@@ -8,19 +8,24 @@ import {
   Home,
   BookOpen,
   Plus,
-  MoreHorizontal,
   BarChart3,
   Tags,
   ArrowDownLeft,
   ArrowUpRight,
   X,
+  User,
 } from 'lucide-react'
+import { useData } from '../../store'
 
 export function AppleTabBar() {
   const pathname = usePathname()
   const router = useRouter()
   const { t } = useTranslation()
+  const { business } = useData()
   const [showAddMenu, setShowAddMenu] = useState(false)
+
+  const businessName = business?.name || 'Hisaab'
+  const avatarInitial = businessName.trim() ? businessName.trim().charAt(0).toUpperCase() : 'H'
 
   // Don't show bottom bar on add entry page to give full room to numpad & direct focus
   const isAddPage = pathname.startsWith('/add')
@@ -30,7 +35,21 @@ export function AppleTabBar() {
     { href: '/entries', label: t('nav.entries') || 'Entries', icon: BookOpen, match: (p: string) => p.startsWith('/entries') },
     // Center add button is rendered separately
     { href: '/reports', label: t('nav.reports') || 'Reports', icon: BarChart3, match: (p: string) => p.startsWith('/reports') },
-    { href: '/more', label: t('nav.more') || 'More', icon: MoreHorizontal, match: (p: string) => p.startsWith('/more') || p.startsWith('/categories') },
+    {
+      href: '/more',
+      label: t('nav.profile') || 'Profile',
+      match: (p: string) => p.startsWith('/more') || p.startsWith('/categories'),
+      customIcon: (active: boolean) => (
+        <div
+          className={`relative flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-[10px] font-bold leading-none text-white shadow-sm transition-all ${
+            active ? 'ring-2 ring-[#007AFF] dark:ring-[#0A84FF]' : 'opacity-85'
+          }`}
+        >
+          {avatarInitial || <User className="h-3 w-3 text-white" />}
+          <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#34C759] ring-1 ring-white dark:ring-[#1C1C1E]" />
+        </div>
+      ),
+    },
   ]
 
   const sidebarItems = [
@@ -75,7 +94,7 @@ export function AppleTabBar() {
 
         {/* Navigation Links */}
         <div className="flex flex-1 flex-col gap-1 overflow-y-auto">
-          <div className="px-2 text-[11px] font-semibold uppercase tracking-wider text-[#8E8E93] dark:text-[#A1A1A6]">
+          <div className="px-2 text-[11px] font-semibold text-[#8E8E93] dark:text-[#A1A1A6]">
             Menu
           </div>
           {sidebarItems.map((item) => {
@@ -117,7 +136,11 @@ export function AppleTabBar() {
                   active ? 'text-[#007AFF] dark:text-[#0A84FF]' : 'text-[#8E8E93] hover:text-black dark:text-[#A1A1A6] dark:hover:text-white'
                 }`}
               >
-                <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                {item.customIcon ? (
+                  item.customIcon(active)
+                ) : Icon ? (
+                  <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                ) : null}
                 <span className="text-[10px] font-semibold tracking-tight">{item.label}</span>
               </Link>
             )
@@ -145,7 +168,11 @@ export function AppleTabBar() {
                   active ? 'text-[#007AFF] dark:text-[#0A84FF]' : 'text-[#8E8E93] hover:text-black dark:text-[#A1A1A6] dark:hover:text-white'
                 }`}
               >
-                <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                {item.customIcon ? (
+                  item.customIcon(active)
+                ) : Icon ? (
+                  <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                ) : null}
                 <span className="text-[10px] font-semibold tracking-tight">{item.label}</span>
               </Link>
             )

@@ -227,7 +227,7 @@ export function AddEntry() {
           : 'bg-rose-500/10 hover:bg-rose-500/15 dark:bg-rose-500/20'
       }`}
     >
-      <div className="text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6]">
+      <div className="text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6]">
         {editing ? t('add.editTitle') || 'Edit Entry' : t('add.amount') || 'Enter Amount'}
       </div>
       <div

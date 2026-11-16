@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
     "dexie": "^4.0.11",
     "dexie-react-hooks": "^1.1.7",
     "i18next": "^23.16.8",

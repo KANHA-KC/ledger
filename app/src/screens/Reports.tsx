@@ -28,7 +28,7 @@ export function Reports() {
   const d = useData()
   const { live, maps, nm, lang, business } = d
   const [month, setMonth] = useState(startOfMonthISO(todayISO()))
-  const [dir, setDir] = useState<'out' | 'in'>('out')
+  const [dir, setDir] = useState<'out' | 'in'>('in')
   const from = month
   const to = endOfMonthISO(month)
   const inMonth = live.filter((x) => x.date >= from && x.date <= to)
@@ -157,7 +157,7 @@ export function Reports() {
       {/* Monthly Financial Health Card */}
       <div className="apple-card p-5">
         <div className="mb-4 flex items-center justify-between">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6]">
+          <span className="text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6]">
             {mLabel}
           </span>
           <span className="tabular-numbers text-sm font-bold text-neutral-900 dark:text-white">
@@ -247,8 +247,8 @@ export function Reports() {
                 value={dir}
                 onChange={setDir}
                 options={[
-                  { value: 'out', label: t('act.out') || 'Money Out' },
                   { value: 'in', label: t('act.in') || 'Money In' },
+                  { value: 'out', label: t('act.out') || 'Money Out' },
                 ]}
               />
             </div>

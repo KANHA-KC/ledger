@@ -10,7 +10,7 @@ import { setNumerals } from '../lib/format'
 import { startSyncLoop } from '../lib/sync'
 import { checkAndRunScheduledBackup } from '../lib/backup'
 import { ensureDemoCategories, DEMO_BUSINESS_ID, DEMO_BUSINESS_NAME } from '../lib/demo'
-import { seedDummyEntriesForAllCategories, removeAllUdhaarTransactions } from '../lib/dummyData'
+import { seedDummyEntriesForAllCategories, removeAllUdhaarTransactions, cleanPartyNames } from '../lib/dummyData'
 import { DataProvider, ToastProvider } from '../store'
 import { Layout } from './Layout'
 import { Onboarding } from '../screens/Onboarding'
@@ -51,24 +51,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       const id = await getSetting<string>('activeBusiness', '')
       let b = id ? await db.businesses.get(id) : undefined
       if (b) {
-        if (b.name.includes('Sharma Enterprises') || b.id === DEMO_BUSINESS_ID) {
-          if (b.name !== DEMO_BUSINESS_NAME) {
+        if (b.id === DEMO_BUSINESS_ID) {
+          if (b.name.includes('Sharma Enterprises')) {
             await db.businesses.update(b.id, { name: DEMO_BUSINESS_NAME })
             b = { ...b, name: DEMO_BUSINESS_NAME }
           }
-        }
-        if (typeof window !== 'undefined') {
-          const currentOwner = localStorage.getItem('hisaab_user_name')
-          if (!currentOwner || currentOwner === 'Ramesh Sharma') {
-            localStorage.setItem('hisaab_user_name', 'Dilip Chandravanshi')
+          if (typeof window !== 'undefined') {
+            const currentOwner = localStorage.getItem('hisaab_user_name')
+            if (!currentOwner || currentOwner === 'Ramesh Sharma') {
+              localStorage.setItem('hisaab_user_name', 'Dilip Chandravanshi')
+            }
           }
-        }
-        if (b.id === DEMO_BUSINESS_ID) {
           await ensureDemoCategories(b.id)
+          seedDummyEntriesForAllCategories(b.id, 4).catch((err) =>
+            console.error('seedDummyEntriesForAllCategories error:', err)
+          )
+          removeAllUdhaarTransactions(b.id).catch((err) =>
+            console.error('removeAllUdhaarTransactions error:', err)
+          )
+          cleanPartyNames(b.id).catch((err) =>
+            console.error('cleanPartyNames error:', err)
+          )
         }
-        seedDummyEntriesForAllCategories(b.id, 4).catch((err) =>
-          console.error('seedDummyEntriesForAllCategories error:', err)
-        )
       }
       setBusiness(b ?? null)
       purgeBin().catch(() => {})

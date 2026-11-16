@@ -276,6 +276,24 @@ export async function removeAllUdhaarTransactions(businessId: string) {
   }
 }
 
+/**
+ * Removes any roles in parentheses from party names (e.g. "Ramesh Kumar (Customer)" -> "Ramesh Kumar")
+ */
+export async function cleanPartyNames(businessId: string) {
+  try {
+    const parties = await db.parties.where('businessId').equals(businessId).toArray()
+    for (const p of parties) {
+      const cleaned = p.name.replace(/\s*\([^)]*\)$/, '').trim()
+      if (cleaned !== p.name) {
+        p.name = cleaned
+        await db.parties.put(p)
+      }
+    }
+  } catch (err) {
+    console.error('cleanPartyNames error:', err)
+  }
+}
+
 // Deprecated alias for backwards compatibility
 export const fixDummyCreditEntries = removeAllUdhaarTransactions
 

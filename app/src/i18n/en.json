@@ -1,9 +1,9 @@
 {
   "app": { "name": "Hisaab", "tagline": "Money in, money out — all in one place, in your language." },
-  "nav": { "home": "Home", "entries": "Entries", "udhaar": "Udhaar", "more": "More", "add": "Add", "reports": "Reports", "categories": "Categories", "wallets": "Wallets", "bin": "Bin", "settings": "Settings" },
+  "nav": { "home": "Home", "entries": "Entries", "udhaar": "Udhaar", "more": "More", "profile": "Profile", "add": "Add", "reports": "Reports", "categories": "Categories", "wallets": "Wallets", "bin": "Bin", "settings": "Settings" },
   "act": {
     "in": "Money In", "out": "Money Out", "inShort": "+ Money In", "outShort": "− Money Out",
-    "save": "Save", "cancel": "Cancel", "undo": "Undo", "edit": "Edit", "delete": "Delete", "restore": "Restore",
+    "save": "Save", "saveChanges": "Save Changes", "cancel": "Cancel", "undo": "Undo", "edit": "Edit", "delete": "Delete", "restore": "Restore",
     "next": "Next", "back": "Back", "done": "Done", "skip": "Skip", "seeAll": "See all", "filter": "Filter",
     "clear": "Clear all", "share": "Share", "call": "Call", "whatsapp": "WhatsApp", "addDetails": "Add details (optional)",
     "hideDetails": "Hide details", "transfer": "Move money", "add": "Add", "search": "Search",
@@ -11,7 +11,7 @@
   },
   "period": { "today": "Today", "week": "This week", "month": "This month", "lastMonth": "Last month", "custom": "Custom", "from": "From", "to": "To" },
   "hero": {
-    "in": "Money In", "out": "Money Out", "left": "Left over",
+    "in": "Money In", "out": "Money Out", "left": "Net Balance",
     "more": "{amount} more left over than {prev}", "less": "{amount} less left over than {prev}", "same": "Same as {prev}",
     "prev_today": "yesterday", "prev_week": "last week", "prev_month": "last month", "prev_lastMonth": "the month before", "prev_custom": "the period before"
   },
@@ -69,7 +69,7 @@
     "date_col": "Date", "type_col": "Type", "wallet_col": "Wallet", "party_col": "Person", "note_col": "Note", "debit": "Money Out", "credit": "Money In", "account": "Account"
   },
   "cat": {
-    "title": "Categories", "in": "Money In", "out": "Money Out", "new": "New category", "name": "Name", "icon": "Picture", "color": "Colour",
+    "title": "Categories", "searchPh": "Search categories…", "in": "Money In", "out": "Money Out", "new": "New category", "name": "Name", "icon": "Picture", "color": "Colour",
     "parent": "Inside (optional)", "none": "None", "hide": "Hide", "show": "Show", "hidden": "Hidden", "merge": "Merge into…", "mergeConfirm": "Move all entries from {from} into {to}?",
     "mergeDone": "Merged", "special": "Udhaar", "delete": "Delete category",
     "deleteConfirm": "Are you sure you want to delete \"{name}\"? It will be moved to the Recycle Bin for 30 days.",
@@ -88,6 +88,13 @@
     "title": "Wallets", "transferTitle": "Move money between wallets", "from": "From", "to": "To", "transferNote": "e.g. Galla → bank deposit",
     "opening": "Opening balance", "assets": "Things you own", "loans": "Loans", "editValue": "Change value", "netWorthNote": "These values are used for net worth.",
     "rename": "Name", "add": "Add wallet", "same": "Choose two different wallets"
+  },
+  "profile": {
+    "settingsTitle": "Profile & Organization Settings",
+    "saved": "Profile & Organization updated successfully",
+    "yourName": "Your Name",
+    "companyName": "Company / Business Name",
+    "role": "Your Role in Organization"
   },
   "more": {
     "title": "More", "language": "Language", "numerals": "Number style", "western": "123", "devanagari": "१२३", "pin": "Change PIN", "highContrast": "High contrast",

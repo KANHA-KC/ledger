@@ -6,6 +6,7 @@ export type BusinessType = 'kirana' | 'kapda' | 'hardware' | 'dairy' | 'khana' |
 
 export interface Business {
   id: string
+  orgId?: string
   name: string
   type: BusinessType
   ownerPhone: string
@@ -14,6 +15,21 @@ export interface Business {
   trialEndsAt: string // ISO date
   fyStartMonth: number // 1-12, India = 4
   createdAt: string
+  updatedAt?: string
+  deletedAt?: string | null
+  serverVersion?: number
+}
+
+export type MemberRole = 'owner' | 'admin' | 'editor' | 'viewer'
+
+export interface OrgMember {
+  id: string
+  name: string
+  phone?: string
+  email?: string
+  role: MemberRole
+  addedAt: string
+  isCurrentUser?: boolean
 }
 
 export type AccountKind =
@@ -25,6 +41,7 @@ export type AccountKind =
 export interface Account {
   id: string
   businessId: string
+  orgId?: string
   kind: AccountKind
   name_en: string
   name_hi: string
@@ -32,6 +49,9 @@ export interface Account {
   opening: number // paise; for asset/stock/loan this is the current manual value
   hidden?: boolean
   system?: boolean
+  updatedAt?: string
+  deletedAt?: string | null
+  serverVersion?: number
 }
 
 /** Special categories move money to/from a party's udhaar instead of income/expense. */
@@ -40,6 +60,7 @@ export type CategorySpecial = 'udhaar_diya' | 'udhaar_mila' | 'udhaar_liya' | 'u
 export interface Category {
   id: string
   businessId: string
+  orgId?: string
   parentId: string | null
   direction: Direction
   key?: string // stable key for default categories (used by voice parsing)
@@ -51,18 +72,23 @@ export interface Category {
   hidden?: boolean
   special?: CategorySpecial
   sort: number
+  updatedAt?: string
   deletedAt?: string | null
+  serverVersion?: number
 }
 
 export interface Party {
   id: string
   businessId: string
+  orgId?: string
   name: string // as typed
   nameAlt: string // transliterated copy (other script), for search
   phone: string
   type: 'customer' | 'supplier' | 'worker' | 'lender' | 'other'
   createdAt: string
+  updatedAt?: string
   deletedAt?: string | null
+  serverVersion?: number
 }
 
 export interface TxnSnapshot {
@@ -80,6 +106,7 @@ export interface TxnSnapshot {
 export interface Txn {
   id: string
   businessId: string
+  orgId?: string
   date: string // YYYY-MM-DD (local)
   amount: number // paise
   direction: Direction | 'transfer'
@@ -92,17 +119,20 @@ export interface Txn {
   tags: string[]
   photoId?: string | null
   createdBy: string
+  updatedBy?: string
   createdAt: string
   updatedAt: string
   createdOfflineAt?: string | null
   deletedAt?: string | null
   syncStatus: 'pending' | 'synced'
+  serverVersion?: number
   history: TxnSnapshot[]
 }
 
 export interface LedgerLine {
   id: string
   businessId: string
+  orgId?: string
   txnId: string
   date: string
   accountId: string
@@ -113,7 +143,10 @@ export interface LedgerLine {
 
 export interface Photo {
   id: string
+  orgId?: string
+  businessId?: string
   blob: Blob
+  serverPath?: string
   createdAt: string
 }
 
@@ -126,4 +159,16 @@ export interface DictWord {
 export interface Setting {
   key: string
   value: unknown
+}
+
+export type OutboxTable = 'accounts' | 'categories' | 'parties' | 'txns' | 'businesses'
+export type OutboxAction = 'upsert' | 'delete'
+
+export interface OutboxItem {
+  id: string
+  table: OutboxTable
+  action: OutboxAction
+  businessId: string
+  payload: any
+  createdAt: string
 }

@@ -196,7 +196,7 @@ export function Wallets() {
 
           {transfers.length > 0 && (
             <div className="mt-4 border-t border-black/[0.04] pt-3 dark:border-white/[0.06]">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-400">
+              <div className="mb-2 text-xs font-semibold text-neutral-400">
                 Recent Transfers
               </div>
               <ul className="divide-y divide-black/[0.04] text-xs dark:divide-white/[0.06]">

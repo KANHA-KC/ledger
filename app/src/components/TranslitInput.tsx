@@ -175,10 +175,10 @@ export function TranslitInput({
         </button>
       </div>
 
-      {/* Apple Predictive Ribbon */}
+      {/* Apple Predictive Ribbon as an overlay dropdown */}
       {sugg.length > 0 && (
         <div
-          className="no-scrollbar mt-1.5 flex gap-1.5 overflow-x-auto rounded-xl border border-black/[0.05] bg-neutral-100/90 p-1.5 backdrop-blur-md dark:border-white/[0.08] dark:bg-neutral-800/90"
+          className="no-scrollbar absolute left-0 top-full mt-1.5 z-40 flex gap-1.5 overflow-x-auto rounded-xl border border-black/[0.08] bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/[0.1] dark:bg-[#1C1C1E]/95 max-w-full"
           role="listbox"
         >
           {sugg.map((s, i) => (

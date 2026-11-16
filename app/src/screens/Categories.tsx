@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from '../lib/navigation'
-import { Plus, Edit3, ArrowLeftRight, Eye, EyeOff, Trash2, Check, Sparkles, ChevronRight, AlertTriangle } from 'lucide-react'
+import { Plus, Edit3, ArrowLeftRight, Eye, EyeOff, Trash2, Check, Sparkles, ChevronRight, AlertTriangle, Search, X } from 'lucide-react'
 import { filterHref } from '../lib/filters'
 import { db, uuid } from '../db/db'
 import { saveTxn, softDeleteCategory, undeleteCategory } from '../db/ledger'
@@ -23,7 +23,7 @@ export function Categories() {
   const [sp] = useSearchParams()
   const { categories, nm, business, txns, accounts, parties } = useData()
   const toast = useToast()
-  const initialDir = sp?.get('dir') === 'in' ? 'in' : 'out'
+  const initialDir = sp?.get('dir') === 'out' ? 'out' : 'in'
   const [dir, setDir] = useState<Direction>(initialDir)
 
   useEffect(() => {
@@ -37,10 +37,35 @@ export function Categories() {
   const [switchSheetCat, setSwitchSheetCat] = useState<Category | null>(null)
   const [selectedSwitchCat, setSelectedSwitchCat] = useState<Category | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [search, setSearch] = useState('')
   const seededRef = useRef(false)
 
   const list = categories.filter((c) => c.direction === dir)
-  const parents = list.filter((c) => !c.parentId)
+  const query = search.trim().toLowerCase()
+  const queryDeva = hasDevanagari(query) ? query : toDevanagari(query).toLowerCase()
+
+  const filteredList = query
+    ? list.filter((c) => {
+        const nameEn = (c.name_en || '').toLowerCase()
+        const nameHi = (c.name_hi || '').toLowerCase()
+        const nameCurr = (nm(c) || '').toLowerCase()
+        return (
+          nameEn.includes(query) ||
+          nameHi.includes(query) ||
+          nameHi.includes(queryDeva) ||
+          nameCurr.includes(query)
+        )
+      })
+    : list
+
+  const parents = query
+    ? filteredList
+    : filteredList.filter((c) => !c.parentId)
+
+  const displayItems = query
+    ? filteredList
+    : parents.flatMap((p) => [p, ...list.filter((k) => k.parentId === p.id)])
+
   const count = (id: string) => txns.filter((x) => x.categoryId === id && !x.deletedAt).length
 
   // Automatically ensure all categories have sample entries
@@ -188,24 +213,82 @@ export function Categories() {
         </div>
       </div>
 
-      {/* Segmented Direction Picker */}
-      <div className="w-full">
-        <AppleSegmentedControl
-          value={dir}
-          onChange={setDir}
-          options={[
-            { value: 'out', label: `↑ ${t('cat.out') || 'Money Out'}` },
-            { value: 'in', label: `↓ ${t('cat.in') || 'Money In'}` },
-          ]}
-        />
+      {/* Controls Bar: Search Bar on Left (like in Entries page) & Segmented Direction Picker on Right */}
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
+        {/* Search Bar on the Left (using TranslitInput, identical to Entries page) */}
+        <div className="relative flex-1 min-w-0">
+          <TranslitInput
+            value={search}
+            onChange={setSearch}
+            placeholder={t('cat.searchPh') || 'Search categories…'}
+          />
+        </div>
+
+        {/* Segmented Direction Picker on the Right */}
+        <div className="w-full sm:w-auto sm:shrink-0">
+          <AppleSegmentedControl
+            size="lg"
+            value={dir}
+            onChange={(d) => {
+              setDir(d)
+              setSearch('')
+            }}
+            options={[
+              { value: 'in', label: `↓ ${t('cat.in') || 'Money In'}` },
+              { value: 'out', label: `↑ ${t('cat.out') || 'Money Out'}` },
+            ]}
+          />
+        </div>
       </div>
 
       {/* Grouped Inset Category List */}
       <div className="apple-card overflow-hidden">
         <div className="divide-y divide-black/[0.04] dark:divide-white/[0.06]">
-          {parents
-            .flatMap((p) => [p, ...list.filter((k) => k.parentId === p.id)])
-            .map((c) => (
+          {displayItems.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 dark:bg-[#2C2C2E] text-neutral-400 mb-3">
+                <Search className="h-6 w-6 stroke-[1.75]" />
+              </div>
+              <h3 className="apple-headline text-neutral-800 dark:text-neutral-200">
+                {t('cat.noResults') || 'No categories found'}
+              </h3>
+              <p className="mt-1 text-xs text-[#6E6E73] dark:text-[#A1A1A6]">
+                {search ? `No category matching "${search}" in ${dir === 'in' ? 'Money In' : 'Money Out'}` : 'No categories in this section yet'}
+              </p>
+              {search && (() => {
+                const otherDir = dir === 'in' ? 'out' : 'in'
+                const otherMatches = categories.filter(
+                  (c) =>
+                    c.direction === otherDir &&
+                    ((c.name_en || '').toLowerCase().includes(query) ||
+                      (c.name_hi || '').toLowerCase().includes(query) ||
+                      (c.name_hi || '').toLowerCase().includes(queryDeva) ||
+                      (nm(c) || '').toLowerCase().includes(query))
+                )
+                return (
+                  <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                    {otherMatches.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setDir(otherDir)}
+                        className="apple-press rounded-lg bg-[#007AFF] px-3 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-[#0066D6]"
+                      >
+                        Switch to {otherDir === 'in' ? (t('cat.in') || 'Money In') : (t('cat.out') || 'Money Out')} ({otherMatches.length})
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setSearch('')}
+                      className="apple-press rounded-lg border border-black/[0.08] dark:border-white/10 bg-white dark:bg-[#2C2C2E] px-3 py-1.5 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50"
+                    >
+                      {t('act.clearSearch') || 'Clear search'}
+                    </button>
+                  </div>
+                )
+              })()}
+            </div>
+          ) : (
+            displayItems.map((c) => (
               <div
                 key={c.id}
                 className={`group flex w-full items-center gap-3.5 p-3.5 text-left transition-colors hover:bg-neutral-50/70 dark:hover:bg-[#2C2C2E]/60 ${
@@ -261,7 +344,8 @@ export function Categories() {
                   </button>
                 </div>
               </div>
-            ))}
+            ))
+          )}
         </div>
       </div>
 
@@ -377,7 +461,7 @@ export function Categories() {
 
             {/* Target Category Selector */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+              <label className="text-xs font-semibold text-neutral-500">
                 {switchSheetCat.direction === 'in'
                   ? (t('cat.in') || 'Money In')
                   : (t('cat.out') || 'Money Out')}

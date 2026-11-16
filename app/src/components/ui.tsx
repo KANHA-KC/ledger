@@ -206,12 +206,14 @@ export function Sheet({
   title,
   children,
   footer,
+  widthCls = 'md:w-[500px]',
 }: {
   open: boolean
   onClose: () => void
   title: string
   children: ReactNode
   footer?: ReactNode
+  widthCls?: string
 }) {
   const { t } = useTranslation()
   useEffect(() => {
@@ -232,7 +234,10 @@ export function Sheet({
         role="dialog"
         aria-modal
         aria-label={title}
-        className="flex max-h-[90vh] w-full flex-col rounded-t-[32px] bg-white shadow-2xl dark:bg-[#1C1C1E] md:max-h-[85vh] md:w-[480px] md:rounded-[28px] overflow-hidden border border-black/5 dark:border-white/10"
+        className={cx(
+          'flex max-h-[90vh] w-full flex-col rounded-t-[32px] bg-white shadow-2xl dark:bg-[#1C1C1E] md:max-h-[85vh] md:rounded-[28px] overflow-hidden border border-black/5 dark:border-white/10',
+          widthCls
+        )}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Grab handle indicator on mobile */}
@@ -365,10 +370,10 @@ export function CatIcon({
   )
 }
 
-export function Field({ label, children }: { label: string; children: ReactNode }) {
+export function Field({ label, children }: { label: ReactNode; children: ReactNode }) {
   return (
     <label className="mb-3.5 block">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6]">
+      <span className="mb-1.5 block text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6]">
         {label}
       </span>
       {children}

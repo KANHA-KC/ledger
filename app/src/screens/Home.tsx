@@ -9,8 +9,6 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   ChevronRight,
-  TrendingUp,
-  TrendingDown,
   Sparkles,
   Wallet,
   Calendar,
@@ -81,17 +79,6 @@ export function Home() {
   const aaya = sumIn(cur.filter(isCashIn))
   const gaya = sumIn(cur.filter(isCashOut))
   const bacha = aaya - gaya
-  const p = inRange(prev)
-  const prevBacha = sumIn(p.filter(isCashIn)) - sumIn(p.filter(isCashOut))
-  const diff = bacha - prevBacha
-  const prevLabel = t(`hero.prev_${period}`) || 'previous period'
-  const compare =
-    diff === 0
-      ? t('hero.same', { prev: prevLabel }) || 'Same as previous'
-      : t(diff > 0 ? 'hero.more' : 'hero.less', {
-          amount: money(Math.abs(diff)),
-          prev: prevLabel,
-        }) || `${money(Math.abs(diff))} vs previous`
   const periodLabel = period === 'custom' ? `${range.from} – ${range.to}` : t(`period.${period}`)
 
   // Cash flow buckets: per day for ≤ 14 days, otherwise per week
@@ -225,50 +212,55 @@ export function Home() {
         </button>
       </div>
 
-      {/* Apple Segmented Period Control */}
-      <div className="w-full">
-        <AppleSegmentedControl
-          value={period}
-          onChange={setPeriod}
-          options={PERIODS.map((k) => ({
-            value: k,
-            label: t(`period.${k}`) || k,
-          }))}
-        />
-      </div>
-
-      {period === 'custom' && (
-        <div className="grid grid-cols-2 gap-2.5">
-          <label className="block">
-            <span className="mb-1 block text-xs font-medium text-neutral-500">
-              {t('period.from') || 'From'}
-            </span>
-            <input
-              type="date"
-              className={inputCls}
-              value={custom.from}
-              onChange={(e) => e.target.value && setCustom({ ...custom, from: e.target.value })}
-            />
-          </label>
-          <label className="block">
-            <span className="mb-1 block text-xs font-medium text-neutral-500">
-              {t('period.to') || 'To'}
-            </span>
-            <input
-              type="date"
-              className={inputCls}
-              value={custom.to}
-              onChange={(e) => e.target.value && setCustom({ ...custom, to: e.target.value })}
-            />
-          </label>
+      {/* Apple Segmented Period Control & Custom Date Range in a Single Row */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+        <div className="w-full sm:w-[520px] sm:max-w-xl shrink-0">
+          <AppleSegmentedControl
+            value={period}
+            onChange={setPeriod}
+            options={PERIODS.map((k) => ({
+              value: k,
+              label: t(`period.${k}`) || k,
+            }))}
+          />
         </div>
-      )}
+
+        {period === 'custom' && (
+          <div className="flex items-center gap-1.5 shrink-0 bg-neutral-200/70 dark:bg-[#1C1C1E] p-1 rounded-xl border border-black/[0.04] dark:border-white/10 shadow-sm animate-in fade-in duration-150">
+            <div className="flex items-center gap-1">
+              <span className="text-[11px] font-semibold text-neutral-500 pl-1.5 whitespace-nowrap">
+                {t('period.from') || 'From'}
+              </span>
+              <input
+                type="date"
+                aria-label={t('period.from') || 'From'}
+                className="h-8 w-32 sm:w-36 rounded-lg border border-black/[0.08] dark:border-white/10 bg-white dark:bg-[#2C2C2E] px-2 text-xs font-semibold text-neutral-800 dark:text-neutral-200 shadow-sm outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF]"
+                value={custom.from}
+                onChange={(e) => e.target.value && setCustom({ ...custom, from: e.target.value })}
+              />
+            </div>
+            <span className="text-neutral-400 font-bold text-xs">–</span>
+            <div className="flex items-center gap-1">
+              <span className="text-[11px] font-semibold text-neutral-500 whitespace-nowrap">
+                {t('period.to') || 'To'}
+              </span>
+              <input
+                type="date"
+                aria-label={t('period.to') || 'To'}
+                className="h-8 w-32 sm:w-36 rounded-lg border border-black/[0.08] dark:border-white/10 bg-white dark:bg-[#2C2C2E] px-2 text-xs font-semibold text-neutral-800 dark:text-neutral-200 shadow-sm outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF]"
+                value={custom.to}
+                onChange={(e) => e.target.value && setCustom({ ...custom, to: e.target.value })}
+              />
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Hero Financial Health Card (Apple Wallet style) */}
       <div className="apple-card p-5">
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6]">
+            <span className="text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6]">
               {periodLabel}
             </span>
             <SpeakBtn
@@ -281,16 +273,6 @@ export function Home() {
                 }) || `Summary: Money In ${money(aaya)}, Money Out ${money(gaya)}, Balance ${money(bacha)}`
               }
             />
-          </div>
-          <div
-            className={`flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-              diff >= 0
-                ? 'bg-[#34C759]/15 text-[#1C7430] dark:bg-[#30D158]/20 dark:text-[#30D158]'
-                : 'bg-[#FF3B30]/15 text-[#D70015] dark:bg-[#FF453A]/20 dark:text-[#FF453A]'
-            }`}
-          >
-            {diff >= 0 ? <TrendingUp className="h-3.5 w-3.5" /> : <TrendingDown className="h-3.5 w-3.5" />}
-            <span>{compare}</span>
           </div>
         </div>
 

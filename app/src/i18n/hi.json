@@ -1,9 +1,9 @@
 {
   "app": { "name": "हिसाब", "tagline": "पैसा आया, पैसा गया — सब एक जगह, अपनी भाषा में।" },
-  "nav": { "home": "होम", "entries": "एंट्री", "udhaar": "उधार", "more": "और", "add": "जोड़ें", "reports": "रिपोर्ट", "categories": "श्रेणी", "wallets": "खाते", "bin": "कचरा पेटी", "settings": "सेटिंग" },
+  "nav": { "home": "होम", "entries": "एंट्री", "udhaar": "उधार", "more": "और", "profile": "प्रोफ़ाइल", "add": "जोड़ें", "reports": "रिपोर्ट", "categories": "श्रेणी", "wallets": "खाते", "bin": "कचरा पेटी", "settings": "सेटिंग" },
   "act": {
     "in": "पैसा आया", "out": "पैसा गया", "inShort": "+ पैसा आया", "outShort": "− पैसा गया",
-    "save": "सेव करें", "cancel": "रहने दें", "undo": "वापस लें", "edit": "बदलें", "delete": "हटाएं", "restore": "वापस लाएं",
+    "save": "सेव करें", "saveChanges": "बदलाव सेव करें", "cancel": "रहने दें", "undo": "वापस लें", "edit": "बदलें", "delete": "हटाएं", "restore": "वापस लाएं",
     "next": "आगे", "back": "पीछे", "done": "हो गया", "skip": "छोड़ें", "seeAll": "सब देखें", "filter": "छांटें",
     "clear": "सब हटाएं", "share": "भेजें", "call": "कॉल", "whatsapp": "व्हाट्सऐप", "addDetails": "और जानकारी (ज़रूरी नहीं)",
     "hideDetails": "जानकारी छुपाएं", "transfer": "पैसा एक खाते से दूसरे में", "add": "जोड़ें", "search": "खोजें",
@@ -69,7 +69,7 @@
     "date_col": "तारीख", "type_col": "किस तरह", "wallet_col": "खाता", "party_col": "व्यक्ति", "note_col": "नोट", "debit": "Money Out", "credit": "Money In", "account": "Account"
   },
   "cat": {
-    "title": "श्रेणी", "in": "पैसा आया", "out": "पैसा गया", "new": "नई श्रेणी", "name": "नाम", "icon": "चित्र", "color": "रंग",
+    "title": "श्रेणी", "searchPh": "श्रेणी खोजें…", "in": "पैसा आया", "out": "पैसा गया", "new": "नई श्रेणी", "name": "नाम", "icon": "चित्र", "color": "रंग",
     "parent": "किसके अंदर (ज़रूरी नहीं)", "none": "कोई नहीं", "hide": "छुपाएं", "show": "दिखाएं", "hidden": "छुपी हुई", "merge": "इसमें मिलाएं…", "mergeConfirm": "{from} की सब एंट्री {to} में डाल दें?",
     "mergeDone": "मिला दिया", "special": "उधार", "delete": "श्रेणी हटाएं",
     "deleteConfirm": "क्या आप वाकई \"{name}\" को हटाना चाहते हैं? यह कचरा पेटी में 30 दिनों के लिए जाएगी।",
@@ -88,6 +88,13 @@
     "title": "खाते", "transferTitle": "एक खाते से दूसरे में पैसा", "from": "से", "to": "में", "transferNote": "जैसे गल्ले से बैंक में जमा",
     "opening": "शुरुआती बैलेंस", "assets": "आपकी संपत्ति", "loans": "लोन", "editValue": "कीमत बदलें", "netWorthNote": "ये कीमतें कुल हैसियत में जुड़ती हैं।",
     "rename": "नाम", "add": "नया खाता", "same": "दो अलग खाते चुनें"
+  },
+  "profile": {
+    "settingsTitle": "प्रोफ़ाइल और संगठन सेटिंग्स",
+    "saved": "प्रोफ़ाइल और संगठन सफलतापूर्वक अपडेट हो गए",
+    "yourName": "आपका नाम",
+    "companyName": "कंपनी / व्यापार का नाम",
+    "role": "संगठन में आपकी भूमिका"
   },
   "more": {
     "title": "और", "language": "भाषा", "numerals": "अंक", "western": "123", "devanagari": "१२३", "pin": "PIN बदलें", "highContrast": "तेज़ रंग (धूप में)",

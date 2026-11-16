@@ -27,7 +27,7 @@ export function AppleCard({
         <div className="mb-2 flex items-center justify-between px-1">
           <div>
             {title && (
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#6E6E73] dark:text-[#A1A1A6]">
+              <h3 className="text-xs font-semibold text-[#6E6E73] dark:text-[#A1A1A6]">
                 {title}
               </h3>
             )}
