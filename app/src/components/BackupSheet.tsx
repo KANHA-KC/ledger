@@ -242,7 +242,7 @@ export function BackupSheet({
           {/* WhatsApp / Apple Style Status Card */}
           <div className="apple-card overflow-hidden p-4">
             <div className="mb-4 flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-white shadow-sm">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#007AFF] text-white shadow-sm">
                 <Cloud className="h-6 w-6" />
               </div>
               <div>
@@ -381,7 +381,7 @@ export function BackupSheet({
             {/* End-to-End Encryption Toggle & Passphrase */}
             <div className="flex items-center justify-between p-3.5">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#34C759] text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#007AFF] text-white">
                   <Lock className="h-4 w-4" />
                 </div>
                 <div>
@@ -415,7 +415,7 @@ export function BackupSheet({
         title="End-to-End Encryption Password"
       >
         <div className="space-y-4 py-3 text-center">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-white shadow-md">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#007AFF] text-white shadow-md">
             <FolderLock className="h-7 w-7" />
           </div>
           <div>

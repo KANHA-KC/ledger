@@ -339,10 +339,12 @@ export function CatIcon({
   icon,
   color,
   size = 'md',
+  className = '',
 }: {
   icon: string
-  color: string
+  color?: string
   size?: 'sm' | 'md' | 'lg'
+  className?: string
 }) {
   const s = {
     sm: 'h-8 w-8 rounded-xl',
@@ -350,22 +352,21 @@ export function CatIcon({
     lg: 'h-12 w-12 rounded-2xl',
   }[size]
   const iconSize = {
-    sm: 'h-4 w-4 stroke-[2]',
-    md: 'h-5 w-5 stroke-[2]',
-    lg: 'h-6 w-6 stroke-[2]',
+    sm: 'h-4 w-4 stroke-[2.2]',
+    md: 'h-5 w-5 stroke-[2.2]',
+    lg: 'h-6 w-6 stroke-[2.2]',
   }[size]
 
   return (
     <span
-      className={cx('grid shrink-0 place-items-center shadow-sm', s)}
-      style={{
-        background: `${color}18`,
-        border: `1px solid ${color}40`,
-        color: color,
-      }}
+      className={cx(
+        'grid shrink-0 place-items-center shadow-sm bg-[#007AFF] text-white dark:bg-[#0A84FF] ring-1 ring-black/[0.04] dark:ring-white/[0.1]',
+        s,
+        className
+      )}
       aria-hidden
     >
-      <AppIcon name={icon} className={iconSize} />
+      <AppIcon name={icon} className={cx(iconSize, 'text-white')} />
     </span>
   )
 }

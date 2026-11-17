@@ -24,7 +24,7 @@ export function Lock({
   return (
     <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-y-auto bg-[#F2F2F7]/95 p-6 backdrop-blur-2xl dark:bg-black/95">
       {/* Brand Icon */}
-      <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-[22px] bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-3xl font-extrabold text-white shadow-lg">
+      <div className="mb-2 flex h-16 w-16 items-center justify-center rounded-[22px] bg-[#007AFF] text-3xl font-extrabold text-white shadow-lg">
         ₹
       </div>
       <div className="mb-8 flex items-center gap-1.5 text-sm font-semibold text-[#6E6E73] dark:text-[#A1A1A6]">

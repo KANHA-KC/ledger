@@ -91,7 +91,7 @@ export function AppleHeader({
           ) : (
             /* Brand badge for mobile when sidebar is hidden */
             <div className="flex items-center gap-2 md:hidden">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-[#34C759] to-[#30B0C7] text-sm font-bold text-white shadow-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#007AFF] text-sm font-bold text-white shadow-sm">
                 ₹
               </div>
               <span className="text-base font-bold tracking-tight text-neutral-900 dark:text-white">
@@ -129,7 +129,7 @@ export function AppleHeader({
             aria-label={t('nav.more') || 'Profile & Settings'}
           >
             {/* Circular Profile Avatar Pill */}
-            <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-sm font-bold text-white shadow-sm ring-2 ring-black/[0.06] dark:ring-white/[0.1]">
+            <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#007AFF] text-sm font-bold text-white shadow-sm ring-2 ring-black/[0.06] dark:ring-white/[0.1]">
               {avatarInitial}
               <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-[#34C759] ring-2 ring-white dark:ring-[#1C1C1E]" />
             </div>

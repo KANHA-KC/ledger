@@ -147,7 +147,7 @@ export function Udhaar() {
                     href={`/party/${p.id}`}
                     className="apple-press flex min-w-0 flex-1 items-center gap-3"
                   >
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#FF9500] to-[#FFCC00] text-base font-bold text-white shadow-sm">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#007AFF] text-base font-bold text-white shadow-sm">
                       {p.name.slice(0, 1).toUpperCase()}
                     </div>
                     <div className="min-w-0 flex-1">

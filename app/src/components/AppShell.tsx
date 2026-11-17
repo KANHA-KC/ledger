@@ -109,7 +109,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#F2F2F7] dark:bg-black">
         <div className="flex flex-col items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-2xl font-bold text-white shadow-md">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#007AFF] text-2xl font-bold text-white shadow-md">
             ₹
           </div>
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#007AFF] border-t-transparent" />

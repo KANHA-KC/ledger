@@ -97,7 +97,8 @@
     "role": "संगठन में आपकी भूमिका"
   },
   "more": {
-    "title": "और", "language": "भाषा", "numerals": "अंक", "western": "123", "devanagari": "१२३", "pin": "PIN बदलें", "highContrast": "तेज़ रंग (धूप में)",
+    "title": "सेटिंग्स", "language": "भाषा", "numerals": "अंक", "western": "123", "devanagari": "१२३", "pin": "PIN बदलें", "highContrast": "तेज़ रंग (धूप में)",
+    "org": "प्रोफ़ाइल, कंपनी और टीम भूमिकाएं", "cloudBackup": "गूगल ड्राइव और क्लाउड बैकअप", "deviceBackup": "फ़ोन में बैकअप डाउनलोड करें",
     "plan": "प्लान", "free": "मुफ़्त", "basic": "Basic", "pro": "Pro", "trial": "Basic ट्रायल: {days} दिन बाकी",
     "planNote": "Basic ₹49/महीना या ₹499/साल · Pro ₹149/महीना या ₹1,499/साल। UPI AutoPay से भुगतान लॉन्च पर चालू होगा।",
     "export": "मेरा पूरा डेटा डाउनलोड करें", "help": "मदद (व्हाट्सऐप)", "lock": "अभी लॉक करें", "business": "दुकान", "phone": "फ़ोन", "team": "टीम",

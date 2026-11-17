@@ -660,8 +660,8 @@ export function Entries() {
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           {isTransfer ? (
-                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-neutral-200/80 text-neutral-700 dark:bg-[#2C2C2E] dark:text-neutral-200">
-                              <ArrowLeftRight className="h-3.5 w-3.5" />
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#007AFF] text-white dark:bg-[#0A84FF] shadow-sm ring-1 ring-black/[0.04] dark:ring-white/[0.1]">
+                              <ArrowLeftRight className="h-4 w-4 stroke-[2.2]" />
                             </div>
                           ) : (
                             <CatIcon icon={c?.icon ?? 'Tag'} color={c?.color ?? '#007AFF'} size="sm" />

@@ -500,7 +500,7 @@ function CategoryEditor({
     cat ? (i18n.language === 'hi' ? cat.name_hi : cat.name_en) : ''
   )
   const [icon, setIcon] = useState(cat?.icon ?? ICONS[0])
-  const [color, setColor] = useState(cat?.color ?? PALETTE[sort % PALETTE.length])
+  const [color, setColor] = useState(cat?.color ?? '#007AFF')
   const [parentId, setParentId] = useState<string | null>(cat?.parentId ?? null)
   const [mergeTo, setMergeTo] = useState<Category | null>(null)
   const [showMerge, setShowMerge] = useState(false)
@@ -575,23 +575,6 @@ function CategoryEditor({
               >
                 <AppIcon name={ic} className="h-4 w-4" />
               </button>
-            ))}
-          </div>
-        </Field>
-
-        <Field label={t('cat.color') || 'Choose Color'}>
-          <div className="flex flex-wrap gap-2">
-            {PALETTE.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setColor(c)}
-                aria-label={c}
-                className={`h-8 w-8 rounded-full transition-transform ${
-                  color === c ? 'scale-115 ring-2 ring-offset-2 ring-black dark:ring-white' : ''
-                }`}
-                style={{ backgroundColor: c }}
-              />
             ))}
           </div>
         </Field>

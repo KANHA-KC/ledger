@@ -102,7 +102,7 @@ export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
           )}
 
           <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-base font-extrabold text-white shadow-sm">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#007AFF] text-base font-extrabold text-white shadow-sm">
               ₹
             </div>
             <span className="apple-headline text-neutral-900 dark:text-white">
@@ -167,7 +167,7 @@ export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
             className="apple-press group relative flex w-full items-center justify-between overflow-hidden rounded-2xl border border-[#007AFF]/25 bg-gradient-to-r from-[#007AFF]/10 via-[#34C759]/10 to-[#007AFF]/10 p-4 text-left transition-all hover:border-[#007AFF] hover:shadow-md dark:border-[#007AFF]/35 dark:from-[#007AFF]/15 dark:to-[#34C759]/15"
           >
             <div className="flex items-center gap-3.5">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-lg font-bold text-white shadow-sm">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#007AFF] text-lg font-bold text-white shadow-sm">
                 <Zap className="h-5 w-5 fill-white text-white" />
               </div>
               <div>

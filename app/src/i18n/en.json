@@ -97,7 +97,8 @@
     "role": "Your Role in Organization"
   },
   "more": {
-    "title": "More", "language": "Language", "numerals": "Number style", "western": "123", "devanagari": "१२३", "pin": "Change PIN", "highContrast": "High contrast",
+    "title": "Settings", "language": "Language", "numerals": "Number style", "western": "123", "devanagari": "१२३", "pin": "Change PIN", "highContrast": "High contrast",
+    "org": "Profile, Company & Team Roles", "cloudBackup": "Google Drive & Cloud Backup", "deviceBackup": "Download Backup to Device",
     "plan": "Plan", "free": "Muft (Free)", "basic": "Basic", "pro": "Pro", "trial": "Basic trial: {days, plural, one {# day} other {# days}} left",
     "planNote": "Basic ₹49/month or ₹499/year · Pro ₹149/month or ₹1,499/year. Payments via UPI AutoPay will be enabled at launch.",
     "export": "Download all my data", "help": "Help (WhatsApp)", "lock": "Lock now", "business": "Business", "phone": "Phone", "team": "Team members",

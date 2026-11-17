@@ -41,7 +41,7 @@ export function AppleTabBar() {
       match: (p: string) => p.startsWith('/more') || p.startsWith('/categories'),
       customIcon: (active: boolean) => (
         <div
-          className={`relative flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-[10px] font-bold leading-none text-white shadow-sm transition-all ${
+          className={`relative flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#007AFF] text-[10px] font-bold leading-none text-white shadow-sm transition-all ${
             active ? 'ring-2 ring-[#007AFF] dark:ring-[#0A84FF]' : 'opacity-85'
           }`}
         >
@@ -65,7 +65,7 @@ export function AppleTabBar() {
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-black/[0.06] bg-white/70 p-4 backdrop-blur-2xl dark:border-white/[0.08] dark:bg-[#1C1C1E]/80 md:flex">
         {/* Brand */}
         <div className="mb-6 flex items-center gap-3 px-2 pt-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#34C759] to-[#30B0C7] text-xl font-extrabold text-white shadow-md">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#007AFF] text-xl font-extrabold text-white shadow-md">
             ₹
           </div>
           <div>
@@ -151,7 +151,7 @@ export function AppleTabBar() {
             onClick={() => setShowAddMenu(true)}
             type="button"
             aria-label="Add transaction"
-            className="apple-press mx-1 flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-tr from-[#007AFF] to-[#5856D6] text-white shadow-[0_4px_14px_rgba(0,122,255,0.4)]"
+            className="apple-press mx-1 flex h-11 w-11 items-center justify-center rounded-full bg-[#007AFF] text-white shadow-[0_4px_14px_rgba(0,122,255,0.4)]"
           >
             <Plus className="h-6 w-6 stroke-[2.5]" />
           </button>

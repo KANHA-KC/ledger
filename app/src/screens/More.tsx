@@ -91,8 +91,8 @@ export function More({
 
   const links = [
     { to: '/entries', icon: BookOpen, label: t('nav.entries') || 'Entries', bg: 'bg-[#007AFF]' },
-    { to: '/reports', icon: BarChart3, label: t('nav.reports') || 'Reports', bg: 'bg-[#5856D6]' },
-    { to: '/categories', icon: Tags, label: t('nav.categories') || 'Categories', bg: 'bg-[#34C759]' },
+    { to: '/reports', icon: BarChart3, label: t('nav.reports') || 'Reports', bg: 'bg-[#007AFF]' },
+    { to: '/categories', icon: Tags, label: t('nav.categories') || 'Categories', bg: 'bg-[#007AFF]' },
   ]
 
   return (
@@ -109,7 +109,7 @@ export function More({
       <div className="apple-card p-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
           <div className="flex items-center gap-3.5 min-w-0">
-            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-xl font-extrabold text-white shadow-sm ring-2 ring-black/[0.06] dark:ring-white/[0.1]">
+            <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#007AFF] text-xl font-extrabold text-white shadow-sm ring-2 ring-black/[0.06] dark:ring-white/[0.1]">
               {business.name.trim() ? business.name.trim().charAt(0).toUpperCase() : 'H'}
               <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-[#34C759] ring-2 ring-white dark:ring-[#1C1C1E]" />
             </div>
@@ -234,7 +234,7 @@ export function More({
           {/* Numerals selector */}
           <div className="flex items-center justify-between p-3.5">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#5856D6] text-white text-xs font-bold">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#007AFF] text-white text-xs font-bold">
                 123
               </div>
               <div>
@@ -263,7 +263,7 @@ export function More({
           {/* High contrast mode toggle */}
           <label className="flex cursor-pointer items-center justify-between p-3.5 hover:bg-neutral-50/50 dark:hover:bg-[#2C2C2E]/60">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FF9500] text-white">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#007AFF] text-white">
                 <Sun className="h-4 w-4" />
               </div>
               <div>
@@ -294,7 +294,7 @@ export function More({
         <div className="divide-y divide-black/[0.04] dark:divide-white/[0.06]">
           <AppleListItem
             icon={<Lock className="h-4 w-4" />}
-            iconBg="bg-[#34C759]"
+            iconBg="bg-[#007AFF]"
             title={t('more.pin') || 'Change 4-Digit Passcode'}
             subtitle="Update the app unlock PIN"
             chevron
@@ -310,7 +310,7 @@ export function More({
           />
           <AppleListItem
             icon={<Users className="h-4 w-4" />}
-            iconBg="bg-[#5856D6]"
+            iconBg="bg-[#007AFF]"
             title={t('more.org') || 'Profile, Company & Team Roles'}
             subtitle={
               currentUserRole === 'admin'
@@ -334,7 +334,7 @@ export function More({
         <div className="divide-y divide-black/[0.04] dark:divide-white/[0.06]">
           <AppleListItem
             icon={<Cloud className="h-4 w-4" />}
-            iconBg="bg-gradient-to-tr from-[#34C759] to-[#007AFF]"
+            iconBg="bg-[#007AFF]"
             title={t('more.cloudBackup') || 'Google Drive & Cloud Backup'}
             subtitle="Scheduled, manual, E2EE & restore (WhatsApp style)"
             chevron
@@ -357,7 +357,7 @@ export function More({
           />
           <AppleListItem
             icon={<Sparkles className="h-4 w-4" />}
-            iconBg="bg-gradient-to-tr from-[#FF9500] to-[#FF3B30]"
+            iconBg="bg-[#007AFF]"
             title={t('more.demoReset') || 'Load Demo Test Account'}
             subtitle={t('more.demoResetDesc') || 'Re-populate sample transactions and parties for testing'}
             chevron
@@ -377,7 +377,7 @@ export function More({
           >
             <AppleListItem
               icon={<HelpCircle className="h-4 w-4" />}
-              iconBg="bg-[#25D366]"
+              iconBg="bg-[#007AFF]"
               title={t('more.help') || 'Customer Support on WhatsApp'}
               subtitle="Talk with our support team"
               chevron

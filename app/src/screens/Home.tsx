@@ -164,9 +164,9 @@ export function Home() {
     <div className="flex flex-col gap-4">
       {/* First-time Guide Callout */}
       {guide && (
-        <div className="apple-card flex items-center justify-between border-l-4 border-l-[#34C759] p-4 bg-emerald-50/40 dark:bg-emerald-950/20">
+        <div className="apple-card flex items-center justify-between border-l-4 border-l-[#007AFF] p-4 bg-blue-50/40 dark:bg-blue-950/20">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#34C759]/20 text-[#34C759]">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#007AFF]/15 text-[#007AFF]">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>

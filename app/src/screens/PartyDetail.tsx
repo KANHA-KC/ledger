@@ -77,7 +77,7 @@ export function PartyDetail() {
         >
           <ChevronLeft className="h-6 w-6 stroke-[2.5]" />
         </button>
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-tr from-[#FF9500] to-[#FFCC00] text-xl font-bold text-white shadow-sm">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#007AFF] text-xl font-bold text-white shadow-sm">
           {p.name.slice(0, 1).toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">

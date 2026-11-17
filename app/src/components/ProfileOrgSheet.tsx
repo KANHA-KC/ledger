@@ -370,7 +370,7 @@ export function ProfileOrgSheet({
             {/* Active User Persona Banner */}
             <div className="flex items-center justify-between rounded-2xl border border-black/[0.06] bg-neutral-50 p-3.5 dark:border-white/[0.08] dark:bg-[#2C2C2E]/60">
               <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-[#34C759] to-[#007AFF] text-base font-extrabold text-white shadow-sm">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#007AFF] text-base font-extrabold text-white shadow-sm">
                   {userName.trim() ? userName.trim().charAt(0).toUpperCase() : 'U'}
                 </div>
                 <div>
