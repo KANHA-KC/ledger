@@ -68,15 +68,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             }
           }
           await ensureDemoCategories(b.id)
-          removeAllDummyData(b.id).catch((err) =>
-            console.error('removeAllDummyData error:', err)
-          )
-          removeAllUdhaarTransactions(b.id).catch((err) =>
-            console.error('removeAllUdhaarTransactions error:', err)
-          )
-          cleanPartyNames(b.id).catch((err) =>
-            console.error('cleanPartyNames error:', err)
-          )
         }
       }
       setBusiness(b ?? null)

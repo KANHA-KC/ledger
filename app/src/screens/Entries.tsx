@@ -1033,7 +1033,7 @@ function FilterSheet({
       [k]: f[k].includes(id) ? f[k].filter((x) => x !== id) : [...f[k], id],
     })
 
-  const quick = (['today', 'week', 'month', 'lastMonth'] as const).map((p) => ({
+  const quick = (['toDate', 'today', 'week', 'month', 'lastMonth'] as const).map((p) => ({
     p,
     r: periodRange(p),
   }))

@@ -9,7 +9,7 @@
     "hideDetails": "जानकारी छुपाएं", "transfer": "पैसा एक खाते से दूसरे में", "add": "जोड़ें", "search": "खोजें",
     "close": "बंद करें", "apply": "एंट्री दिखाएं", "confirm": "हाँ, करें"
   },
-  "period": { "today": "आज", "week": "इस हफ़्ते", "month": "इस महीने", "lastMonth": "पिछला महीना", "custom": "अपनी तारीख", "from": "से", "to": "तक" },
+  "period": { "toDate": "आज तक", "today": "आज", "week": "इस हफ़्ते", "month": "इस महीने", "lastMonth": "पिछला महीना", "custom": "अपनी तारीख", "from": "से", "to": "तक" },
   "hero": {
     "in": "पैसा आया", "out": "पैसा गया", "left": "बचा",
     "more": "{prev} से {amount} ज़्यादा बचा", "less": "{prev} से {amount} कम बचा", "same": "{prev} जितना ही बचा",

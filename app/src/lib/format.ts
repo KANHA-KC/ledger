@@ -25,12 +25,13 @@ export const addMonthsISO = (s: string, n: number) => {
 export const daysBetween = (a: string, b: string) =>
   Math.round((fromISO(b).getTime() - fromISO(a).getTime()) / 86400000)
 
-export type PeriodKey = 'today' | 'week' | 'month' | 'lastMonth' | 'custom'
+export type PeriodKey = 'toDate' | 'today' | 'week' | 'month' | 'lastMonth' | 'custom'
 export interface Range { from: string; to: string }
 
 export function periodRange(p: PeriodKey, custom?: Range): Range {
   const t = todayISO()
   switch (p) {
+    case 'toDate': return { from: '1970-01-01', to: t }
     case 'today': return { from: t, to: t }
     case 'week': {
       const d = fromISO(t)
@@ -48,6 +49,9 @@ export function periodRange(p: PeriodKey, custom?: Range): Range {
 
 /** The same-length period immediately before `r`, for "compared to last ..." lines. */
 export function previousRange(p: PeriodKey, r: Range): Range {
+  if (p === 'toDate') {
+    return r
+  }
   if (p === 'month' || p === 'lastMonth') {
     const s = addMonthsISO(r.from, -1)
     return { from: s, to: endOfMonthISO(s) }

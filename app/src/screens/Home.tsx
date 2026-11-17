@@ -21,6 +21,7 @@ import {
   addMonthsISO,
   daysBetween,
   endOfMonthISO,
+  startOfMonthISO,
   formatMonth,
   fromISO,
   money,
@@ -37,7 +38,7 @@ import { AppleCard } from '../components/apple/AppleCard'
 import { AppleSegmentedControl } from '../components/apple/AppleSegmentedControl'
 import { EntryRow } from '../components/EntryRow'
 
-const PERIODS: PeriodKey[] = ['today', 'week', 'month', 'lastMonth', 'custom']
+const PERIODS: PeriodKey[] = ['toDate', 'today', 'week', 'month', 'lastMonth', 'custom']
 
 function sumIn(txns: { amount: number }[]) {
   return txns.reduce((s, x) => s + x.amount, 0)
@@ -74,15 +75,34 @@ export function Home() {
 
   const range = periodRange(period, custom)
   const prev = previousRange(period, range)
-  const inRange = (r: Range) => live.filter((x) => x.date >= r.from && x.date <= r.to)
+  const inRange = (r: Range) =>
+    period === 'toDate'
+      ? live.filter((x) => x.date <= r.to)
+      : live.filter((x) => x.date >= r.from && x.date <= r.to)
   const cur = inRange(range)
   const aaya = sumIn(cur.filter(isCashIn))
   const gaya = sumIn(cur.filter(isCashOut))
   const bacha = aaya - gaya
-  const periodLabel = period === 'custom' ? `${range.from} – ${range.to}` : t(`period.${period}`)
+  const periodLabel = period === 'custom' ? `${range.from} – ${range.to}` : (t(`period.${period}`) || (period === 'toDate' ? 'To date' : period))
 
-  // Cash flow buckets: per day for ≤ 14 days, otherwise per week
+  // Cash flow buckets: per day for ≤ 14 days, otherwise per week (or 6-month breakdown for toDate)
   const buckets = useMemo(() => {
+    if (period === 'toDate') {
+      const t = todayISO()
+      const out: { label: string; from: string; to: string; in: number; out: number }[] = []
+      for (let i = 5; i >= 0; i--) {
+        const mStart = startOfMonthISO(addMonthsISO(t, -i))
+        const mEnd = endOfMonthISO(mStart)
+        const to = mEnd > t ? t : mEnd
+        const xs = live.filter((x) => x.date >= mStart && x.date <= to)
+        const label = fromISO(mStart).toLocaleDateString(
+          lang === 'hi' ? 'hi-IN' : 'en-IN',
+          { month: 'short' }
+        )
+        out.push({ label, from: mStart, to, in: sumIn(xs.filter(isCashIn)), out: sumIn(xs.filter(isCashOut)) })
+      }
+      return out
+    }
     const days = daysBetween(range.from, range.to) + 1
     const step = days <= 14 ? 1 : 7
     const out: { label: string; from: string; to: string; in: number; out: number }[] = []
@@ -99,7 +119,7 @@ export function Home() {
       out.push({ label, from: d, to, in: sumIn(xs.filter(isCashIn)), out: sumIn(xs.filter(isCashOut)) })
     }
     return out
-  }, [cur, range.from, range.to, lang])
+  }, [cur, range.from, range.to, lang, period, live])
   const maxBar = Math.max(1, ...buckets.flatMap((b) => [b.in, b.out]))
 
   // Top 5 spend categories (by parent), rest grouped as "Baaki"
@@ -214,7 +234,7 @@ export function Home() {
 
       {/* Apple Segmented Period Control & Custom Date Range in a Single Row */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-        <div className="w-full sm:w-[520px] sm:max-w-xl shrink-0">
+        <div className="w-full sm:w-[620px] sm:max-w-2xl shrink-0">
           <AppleSegmentedControl
             value={period}
             onChange={setPeriod}

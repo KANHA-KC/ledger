@@ -42,7 +42,7 @@ export function AppleSegmentedControl<T extends string>({
   return (
     <div
       role="tablist"
-      className={`relative flex w-full items-center rounded-xl bg-neutral-200/80 dark:bg-[#1C1C1E] dark:border dark:border-white/10 ${sizeClasses} ${className}`}
+      className={`relative flex w-full items-center rounded-xl bg-neutral-200/80 dark:bg-[#1C1C1E] dark:border dark:border-white/10 overflow-x-auto no-scrollbar ${sizeClasses} ${className}`}
     >
       {options.map((opt) => {
         const isActive = opt.value === value
@@ -62,7 +62,7 @@ export function AppleSegmentedControl<T extends string>({
                 onChange(opt.value)
               }
             }}
-            className={`apple-press-sm relative z-10 flex flex-1 h-full min-w-0 items-center justify-center gap-1 ${buttonPadding} ${buttonRadius} font-medium transition-all duration-200 ${
+            className={`apple-press-sm relative z-10 flex flex-1 h-full min-w-fit sm:min-w-0 items-center justify-center gap-1 ${buttonPadding} ${buttonRadius} font-medium transition-all duration-200 ${
               isActive
                 ? 'bg-white font-semibold text-black shadow-[0_2px_6px_rgba(0,0,0,0.12)] dark:bg-[#2C2C2E] dark:text-white dark:border dark:border-white/10 dark:shadow-[0_2px_8px_rgba(0,0,0,0.5)]'
                 : 'text-[#6E6E73] hover:text-black dark:text-[#A1A1A6] dark:hover:text-white'

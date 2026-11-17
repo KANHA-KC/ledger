@@ -9,7 +9,7 @@
     "hideDetails": "Hide details", "transfer": "Move money", "add": "Add", "search": "Search",
     "close": "Close", "apply": "Show entries", "confirm": "Yes, do it"
   },
-  "period": { "today": "Today", "week": "This week", "month": "This month", "lastMonth": "Last month", "custom": "Custom", "from": "From", "to": "To" },
+  "period": { "toDate": "To date", "today": "Today", "week": "This week", "month": "This month", "lastMonth": "Last month", "custom": "Custom", "from": "From", "to": "To" },
   "hero": {
     "in": "Money In", "out": "Money Out", "left": "Net Balance",
     "more": "{amount} more left over than {prev}", "less": "{amount} less left over than {prev}", "same": "Same as {prev}",
