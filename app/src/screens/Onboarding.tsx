@@ -7,10 +7,11 @@ import { AppIcon } from '../components/AppIcon'
 import { setLanguage } from '../i18n'
 import { BUSINESS_TYPES, createBusiness } from '../db/seed'
 import type { Business, BusinessType } from '../db/types'
-import { setSetting, db, claimLocalDataForOrg } from '../db/db'
+import { setSetting } from '../db/db'
 import { setPin, verifyOtp, sendOtp } from '../lib/auth'
-import { isCloudEnabled, createOrgCloud } from '../lib/supabase'
-import { triggerSync } from '../lib/sync'
+import { isCloudEnabled, claimInvitesCloud, myBusinessesCloud, type CloudBusinessRow } from '../lib/supabase'
+import { ensureCloudOrg, fullSync, restoreFromCloud } from '../lib/sync'
+import { CloudLogin } from '../components/CloudLogin'
 import { loginWithDemoAccount } from '../lib/demo'
 import { clickFeedback } from '../lib/speak'
 import { Btn, Field, inputCls } from '../components/ui'
@@ -19,7 +20,7 @@ import { AppleNumpad } from '../components/apple/AppleNumpad'
 import { money } from '../lib/format'
 import { PinPad } from './PinPad'
 
-type Step = 'lang' | 'phone' | 'otp' | 'pin' | 'pin2' | 'biz' | 'opening'
+type Step = 'lang' | 'phone' | 'otp' | 'choose' | 'pin' | 'pin2' | 'biz' | 'opening'
 
 export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
   const { t, i18n } = useTranslation()
@@ -32,6 +33,45 @@ export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
   const [name, setName] = useState('')
   const [opening, setOpening] = useState('')
   const [demoLoading, setDemoLoading] = useState(false)
+  // Signing in on a new device: the account may already have a shop on the server.
+  const [restored, setRestored] = useState<Business | null>(null)
+  const [shops, setShops] = useState<CloudBusinessRow[]>([])
+  const [restoring, setRestoring] = useState(false)
+
+  const restore = async (row: CloudBusinessRow) => {
+    setRestoring(true)
+    setErr('')
+    try {
+      const b = await restoreFromCloud(row)
+      await setSetting('activeBusiness', b.id)
+      setRestored(b)
+      setStep('pin')
+    } catch (e) {
+      setErr('Could not download your shop: ' + (e instanceof Error ? e.message : String(e)))
+    } finally {
+      setRestoring(false)
+    }
+  }
+
+  const afterSignIn = async (c: { phone: string; email: string }) => {
+    if (c.phone) setPhone(c.phone)
+    setRestoring(true)
+    try {
+      await claimInvitesCloud()
+      const list = await myBusinessesCloud()
+      if (list.length === 1) return await restore(list[0])
+      if (list.length > 1) {
+        setShops(list)
+        setStep('choose')
+        return
+      }
+      setStep('pin') // brand-new account → create a shop after the PIN
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : String(e))
+    } finally {
+      setRestoring(false)
+    }
+  }
 
   const handleDemoLogin = async () => {
     try {
@@ -52,15 +92,8 @@ export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
     const bizType = type ?? 'other'
     const lang = i18n.language === 'en' ? 'en' : 'hi'
 
-    let cloudOrg: { org_id: string; business_id: string } | null = null
-    if (isCloudEnabled()) {
-      try {
-        cloudOrg = await createOrgCloud(bizName, bizName, bizType, lang)
-      } catch (e) {
-        console.warn('[Onboarding] Cloud org creation deferred/offline:', e)
-      }
-    }
-
+    // The shop is created on the device first (works offline); the same id is then registered
+    // on the server and everything is uploaded in the background.
     const b = await createBusiness({
       name: bizName,
       type: bizType,
@@ -68,16 +101,13 @@ export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
       language: lang,
       openingCash: Math.round(Number(openingRupees || 0) * 100),
     })
-
-    if (cloudOrg) {
-      b.orgId = cloudOrg.org_id
-      await db.businesses.update(b.id, { orgId: cloudOrg.org_id })
-      await claimLocalDataForOrg(cloudOrg.org_id, b.id)
-      triggerSync(b.id)
-    }
-
     await setSetting('activeBusiness', b.id)
     await setSetting('guide', true)
+    if (isCloudEnabled()) {
+      ensureCloudOrg(b)
+        .then(() => fullSync(b.id))
+        .catch((e) => console.warn('[Onboarding] cloud registration will retry:', e))
+    }
     onDone(b)
   }
 
@@ -196,6 +226,46 @@ export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
     )
   }
 
+  if (step === 'phone' && isCloudEnabled()) {
+    return wrap(
+      <>
+        <div className="mb-5">
+          <h1 className="apple-title-2 text-neutral-900 dark:text-white">Sign in</h1>
+          <p className="mt-0.5 text-xs text-neutral-500">Your data is saved to your account and appears on all your devices.</p>
+        </div>
+        {restoring ? (
+          <div className="flex flex-col items-center gap-3 py-8 text-sm text-neutral-600 dark:text-neutral-300">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#007AFF] border-t-transparent" />
+            Loading your shop…
+          </div>
+        ) : (
+          <CloudLogin onSignedIn={afterSignIn} />
+        )}
+        {err && <p className="mt-3 text-sm font-semibold text-[#FF3B30]">{err}</p>}
+      </>,
+      'lang'
+    )
+  }
+
+  if (step === 'choose') {
+    return wrap(
+      <>
+        <h1 className="apple-title-2 mb-1 text-neutral-900 dark:text-white">Choose a shop</h1>
+        <p className="mb-4 text-xs text-neutral-500">This account has access to more than one shop.</p>
+        <div className="grid gap-2">
+          {shops.map((r) => (
+            <button key={r.business_id} disabled={restoring} onClick={() => restore(r)}
+              className="apple-press flex items-center justify-between rounded-2xl border border-black/[0.06] bg-neutral-50 p-4 text-left dark:border-white/[0.08] dark:bg-neutral-800">
+              <span className="font-bold text-neutral-900 dark:text-white">{r.name}</span>
+              <span className="text-xs capitalize text-neutral-500">{r.role}</span>
+            </button>
+          ))}
+        </div>
+        {err && <p className="mt-3 text-sm font-semibold text-[#FF3B30]">{err}</p>}
+      </>
+    )
+  }
+
   if (step === 'phone') {
     return wrap(
       <form
@@ -270,7 +340,7 @@ export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
       <form
         onSubmit={async (e) => {
           e.preventDefault()
-          if (await verifyOtp(phone, otp)) {
+          if ((await verifyOtp(phone, otp)).ok) {
             setErr('')
             setStep('pin')
           } else {
@@ -348,7 +418,8 @@ export function Onboarding({ onDone }: { onDone: (b: Business) => void }) {
             return
           }
           await setPin(p)
-          setStep('biz')
+          if (restored) onDone(restored)
+          else setStep('biz')
         }}
       />
     )

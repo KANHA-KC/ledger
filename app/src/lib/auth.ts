@@ -1,11 +1,13 @@
-// Phone OTP + device PIN.
-// Uses Supabase Phone Auth when cloud credentials are provided;
-// falls back to local demo credentials for offline development.
+// Sign-in (phone OTP or email code via Supabase) + device PIN.
+// When Supabase is configured, a login only succeeds with a REAL session — otherwise the device
+// would look logged in but every sync call would be rejected. Demo codes work only in offline mode.
 import { getSetting, setSetting } from '../db/db'
 import { isCloudEnabled, supabase } from './supabase'
 
 export const DEMO_OTP = '123456'
 export const DEMO_PIN = '1234'
+
+export type LoginMethod = 'phone' | 'email'
 
 export function normalizePhone(rawPhone: string): string {
   const digits = rawPhone.replace(/\D/g, '')
@@ -26,59 +28,59 @@ export async function setPin(pin: string) {
 
 export async function checkPin(pin: string) {
   const stored = await getSetting<string>('pinHash', '')
-  if (!stored) {
-    // If no PIN has been set yet, allow default DEMO_PIN
-    return pin === DEMO_PIN
-  }
+  if (!stored) return pin === DEMO_PIN // only before any PIN was ever set
   return stored === (await sha(pin))
 }
 
-/** Request Phone OTP via Supabase SMS Hook (MSG91) or mock in demo */
-export async function sendOtp(phone: string): Promise<{ success: boolean; error?: string }> {
-  const formatted = normalizePhone(phone)
-  if (!isCloudEnabled() || !supabase) {
-    // Demo mode
-    return { success: true }
-  }
+/** Human-readable reason for the most common Supabase auth errors. */
+function explain(msg: string, method: LoginMethod): string {
+  const m = msg.toLowerCase()
+  if (m.includes('unsupported phone provider') || m.includes('phone') && m.includes('disabled'))
+    return 'Phone login is not switched on for this app yet. Use email instead, or ask the admin to enable an SMS provider in Supabase.'
+  if (m.includes('signups not allowed')) return 'New sign-ups are disabled in Supabase (Auth → Providers).'
+  if (m.includes('rate limit') || m.includes('security purposes'))
+    return 'Too many codes requested. Please wait a minute and try again.'
+  if (m.includes('expired') || m.includes('invalid')) return method === 'email' ? 'Wrong or expired code. Check the latest email.' : 'Wrong or expired OTP.'
+  return msg
+}
 
+/** Send a one-time code by SMS (phone) or email. */
+export async function sendOtp(contact: string, method: LoginMethod = 'phone'): Promise<{ success: boolean; error?: string }> {
+  if (!isCloudEnabled() || !supabase) return { success: true } // offline demo mode
   try {
-    const { error } = await supabase.auth.signInWithOtp({
-      phone: formatted,
-    })
-    if (error) {
-      console.error('[Auth] Send OTP error:', error)
-      return { success: false, error: error.message }
-    }
+    const { error } =
+      method === 'email'
+        ? await supabase.auth.signInWithOtp({
+            email: contact.trim().toLowerCase(),
+            options: { shouldCreateUser: true, emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
+          })
+        : await supabase.auth.signInWithOtp({ phone: normalizePhone(contact) })
+    if (error) return { success: false, error: explain(error.message, method) }
     return { success: true }
-  } catch (err: any) {
-    return { success: false, error: err.message || 'Failed to send OTP' }
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : 'Failed to send code' }
   }
 }
 
-/** Verify entered OTP */
-export async function verifyOtp(phone: string, otp: string): Promise<boolean> {
-  const formatted = normalizePhone(phone)
-  if (!isCloudEnabled() || !supabase) {
-    return otp === DEMO_OTP
-  }
-
+/** Verify the code. Cloud mode: true only if Supabase returned a session. */
+export async function verifyOtp(contact: string, otp: string, method: LoginMethod = 'phone'): Promise<{ ok: boolean; error?: string }> {
+  if (!isCloudEnabled() || !supabase) return otp.trim() === DEMO_OTP ? { ok: true } : { ok: false }
   try {
-    const { data, error } = await supabase.auth.verifyOtp({
-      phone: formatted,
-      token: otp.trim(),
-      type: 'sms',
-    })
-    if (error || !data.session) {
-      console.warn('[Auth] Verify OTP error:', error)
-      // Allow fallback if demo OTP used during testing
-      if (otp.trim() === DEMO_OTP) return true
-      return false
-    }
-    return true
+    const { data, error } =
+      method === 'email'
+        ? await supabase.auth.verifyOtp({ email: contact.trim().toLowerCase(), token: otp.trim(), type: 'email' })
+        : await supabase.auth.verifyOtp({ phone: normalizePhone(contact), token: otp.trim(), type: 'sms' })
+    if (error || !data.session) return { ok: false, error: error ? explain(error.message, method) : 'No session returned' }
+    return { ok: true }
   } catch (err) {
-    console.error('[Auth] Verify error:', err)
-    return otp.trim() === DEMO_OTP
+    return { ok: false, error: err instanceof Error ? err.message : 'Verification failed' }
   }
+}
+
+export async function hasCloudSession(): Promise<boolean> {
+  if (!isCloudEnabled() || !supabase) return false
+  const { data } = await supabase.auth.getSession()
+  return !!data.session
 }
 
 /** Get currently authenticated cloud user */

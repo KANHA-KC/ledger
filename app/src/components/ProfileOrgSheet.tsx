@@ -20,6 +20,7 @@ import {
   AlertCircle,
 } from 'lucide-react'
 import { db, getSetting, setSetting, uuid } from '../db/db'
+import { markDirty } from '../lib/sync'
 import type { Business, MemberRole, OrgMember } from '../db/types'
 import { isCloudEnabled, fetchOrgMembers, inviteMemberCloud, removeMemberCloud } from '../lib/supabase'
 import { useToast } from '../store'
@@ -155,6 +156,7 @@ export function ProfileOrgSheet({
       // 2. If Admin, update business name in database
       if (isAdmin && companyName.trim() !== business.name) {
         await db.businesses.update(business.id, { name: companyName.trim() })
+        await markDirty('businesses', business.id, business.id)
       }
 
       // 3. Update current user entry in team members

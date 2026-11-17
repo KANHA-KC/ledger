@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Lock as LockIcon, ShieldAlert, Zap } from 'lucide-react'
-import { checkPin, setPin, verifyOtp, sendOtp, DEMO_PIN, DEMO_OTP } from '../lib/auth'
+import { checkPin, setPin, verifyOtp, sendOtp, getCurrentCloudUser, DEMO_PIN, DEMO_OTP, type LoginMethod } from '../lib/auth'
 import { Btn, inputCls } from '../components/ui'
 import { PinPad } from './PinPad'
 
@@ -20,6 +20,8 @@ export function Lock({
   const [err, setErr] = useState('')
   const [mode, setMode] = useState<'pin' | 'otp' | 'newPin'>('pin')
   const [otp, setOtp] = useState('')
+  // Forgot-PIN re-verifies with the same method the user signed in with (email or phone).
+  const [contact, setContact] = useState<{ value: string; method: LoginMethod }>({ value: phone, method: 'phone' })
 
   return (
     <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-y-auto bg-[#F2F2F7]/95 p-6 backdrop-blur-2xl dark:bg-black/95">
@@ -70,7 +72,14 @@ export function Lock({
               onClick={() => {
                 setErr('')
                 setMode('otp')
-                sendOtp(phone).catch(() => {})
+                getCurrentCloudUser()
+                  .then((u) => {
+                    const c = u?.email ? { value: u.email, method: 'email' as const } : { value: phone, method: 'phone' as const }
+                    setContact(c)
+                    return sendOtp(c.value, c.method)
+                  })
+                  .then((r) => { if (r && !r.success && r.error) setErr(r.error) })
+                  .catch(() => {})
               }}
             >
               {t('lock.forgot') || 'Forgot Passcode?'}
@@ -84,11 +93,12 @@ export function Lock({
           className="w-full max-w-xs"
           onSubmit={async (e) => {
             e.preventDefault()
-            if (await verifyOtp(phone, otp)) {
+            const res = await verifyOtp(contact.value, otp, contact.method)
+            if (res.ok) {
               setErr('')
               setMode('newPin')
             } else {
-              setErr(t('onb.wrongOtp') || 'Invalid OTP code')
+              setErr(res.error || t('onb.wrongOtp') || 'Invalid OTP code')
             }
           }}
         >
@@ -97,7 +107,7 @@ export function Lock({
               {t('onb.otpTitle') || 'Verify Phone'}
             </h1>
             <p className="mb-4 text-xs text-[#6E6E73] dark:text-[#A1A1A6]">
-              {t('onb.otpSent', { phone: '+91 ' + phone }) || `Code sent to +91 ${phone}`}
+              {contact.method === 'email' ? `Code sent to ${contact.value}` : t('onb.otpSent', { phone: '+91 ' + phone }) || `Code sent to +91 ${phone}`}
             </p>
           </div>
 
@@ -106,7 +116,7 @@ export function Lock({
             inputMode="numeric"
             autoComplete="one-time-code"
             autoFocus
-            maxLength={6}
+            maxLength={8}
             value={otp}
             onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
             aria-label={t('onb.otpTitle')}
@@ -135,7 +145,7 @@ export function Lock({
             >
               {t('act.back') || 'Back'}
             </Btn>
-            <Btn tone="blue" type="submit" disabled={otp.length !== 6}>
+            <Btn tone="blue" type="submit" disabled={otp.length < 6}>
               {t('act.next') || 'Next'}
             </Btn>
           </div>

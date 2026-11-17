@@ -8,6 +8,7 @@ import { Plus, Edit3, ArrowLeftRight, Eye, EyeOff, Trash2, Check, ChevronRight, 
 import { filterHref } from '../lib/filters'
 import { db, uuid } from '../db/db'
 import { saveTxn, softDeleteCategory, undeleteCategory } from '../db/ledger'
+import { markDirty } from '../lib/sync'
 import type { Category, Direction, Account, Party } from '../db/types'
 import { ICONS, PALETTE } from '../db/seed'
 import { useData, useToast } from '../store'
@@ -302,15 +303,17 @@ export function Categories() {
           onDelete={(c) => handleRequestDelete(c)}
           onSave={async (c) => {
             await db.categories.put(c)
+            await markDirty('categories', c.businessId, c.id)
             setEdit(null)
           }}
           onMerge={async (from, to) => {
             const affected = txns.filter((x) => x.categoryId === from.id && !x.deletedAt)
             for (const x of affected) await saveTxn({ ...x, categoryId: to.id })
-            await db.categories
-              .where('parentId')
-              .equals(from.id)
-              .modify({ parentId: to.parentId ?? to.id })
+            const children = await db.categories.where('parentId').equals(from.id).toArray()
+            for (const ch of children) {
+              await db.categories.update(ch.id, { parentId: to.parentId ?? to.id })
+              await markDirty('categories', ch.businessId, ch.id)
+            }
             await softDeleteCategory(from.id)
             setEdit(null)
             toast({

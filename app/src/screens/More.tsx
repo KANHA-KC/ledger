@@ -27,6 +27,7 @@ import {
   Tags,
 } from 'lucide-react'
 import { ProfileOrgSheet } from '../components/ProfileOrgSheet'
+import { CloudSyncCard } from '../components/CloudSyncCard'
 import { db, getSetting, setSetting } from '../db/db'
 import { useData, useToast } from '../store'
 import { setLanguage } from '../i18n'
@@ -323,6 +324,8 @@ export function More({
         </div>
       </div>
       </div>
+
+      <CloudSyncCard business={business} />
 
       {/* Settings Grid on Desktop: Data & Danger */}
       <div className="grid gap-4 md:grid-cols-2 items-start">

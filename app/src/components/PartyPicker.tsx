@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Plus, User, Search, X } from 'lucide-react'
 import { db, uuid } from '../db/db'
+import { markDirty } from '../lib/sync'
 import type { Party } from '../db/types'
 import { useData } from '../store'
 import { hasDevanagari, matches, toDevanagari, toRoman } from '../lib/translit'
@@ -26,6 +27,7 @@ export async function createParty(
     createdAt: new Date().toISOString(),
   }
   await db.parties.add(p)
+  await markDirty('parties', businessId, p.id)
   return p
 }
 

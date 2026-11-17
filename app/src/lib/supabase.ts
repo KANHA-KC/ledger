@@ -29,7 +29,9 @@ export interface CloudOrgResult {
   business_id: string
 }
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface CloudSyncPullResult {
+  business: any | null
   accounts: any[]
   categories: any[]
   parties: any[]
@@ -37,24 +39,70 @@ export interface CloudSyncPullResult {
   server_version: number
 }
 
-export async function createOrgCloud(
-  orgName: string,
-  bizName: string,
-  bizType = 'general',
-  language = 'hi'
-): Promise<CloudOrgResult | null> {
+export interface CloudBusinessRow {
+  org_id: string
+  org_name: string
+  business_id: string
+  name: string
+  type: string
+  language: string
+  owner_phone: string
+  fy_start_month: number
+  created_at: string
+  role: MemberRole
+}
+
+/** Register a shop on the server using the device's own business id (safe to retry). */
+export async function createOrgCloud(opts: {
+  orgName: string
+  bizName: string
+  bizType?: string
+  language?: string
+  businessId: string
+  ownerPhone?: string
+}): Promise<CloudOrgResult | null> {
   if (!supabase) return null
   const { data, error } = await supabase.rpc('create_org', {
-    p_org_name: orgName,
-    p_biz_name: bizName,
-    p_biz_type: bizType,
-    p_language: language,
+    p_org_name: opts.orgName,
+    p_biz_name: opts.bizName,
+    p_biz_type: opts.bizType ?? 'other',
+    p_language: opts.language ?? 'hi',
+    p_business_id: opts.businessId,
+    p_owner_phone: opts.ownerPhone ?? '',
   })
-  if (error) {
-    console.error('[Supabase] create_org error:', error)
-    throw error
-  }
+  if (error) throw error
   return data as CloudOrgResult
+}
+
+/** Shops the signed-in user belongs to (owner, admin, editor or viewer). */
+export async function myBusinessesCloud(): Promise<CloudBusinessRow[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase.rpc('my_businesses')
+  if (error) throw error
+  return (data as CloudBusinessRow[]) ?? []
+}
+
+/** Join any shops this phone/email was invited to. */
+export async function claimInvitesCloud(): Promise<number> {
+  if (!supabase) return 0
+  const { data, error } = await supabase.rpc('claim_my_invites')
+  if (error) {
+    console.warn('[Supabase] claim_my_invites:', error.message)
+    return 0
+  }
+  return Number(data) || 0
+}
+
+/** Which sign-in methods are switched on in the Supabase project (Auth → Providers). */
+export async function getAuthProviders(): Promise<{ phone: boolean; email: boolean }> {
+  if (!isCloudEnabled()) return { phone: false, email: false }
+  try {
+    const res = await fetch(`${supabaseUrl}/auth/v1/settings`, { headers: { apikey: supabaseAnonKey } })
+    const json = await res.json()
+    return { phone: !!json?.external?.phone, email: !!json?.external?.email }
+  } catch {
+    return { phone: true, email: true }
+  }
 }
 
 export async function acceptInviteCloud(inviteId: string): Promise<{ success: boolean; org_id: string } | null> {
@@ -69,7 +117,7 @@ export async function acceptInviteCloud(inviteId: string): Promise<{ success: bo
   return data as { success: boolean; org_id: string }
 }
 
-export async function syncPushCloud(businessId: string, changes: Record<string, any[]>): Promise<number | null> {
+export async function syncPushCloud(businessId: string, changes: Record<string, unknown>): Promise<number | null> {
   if (!supabase) return null
   const { data, error } = await supabase.rpc('sync_push', {
     p_business_id: businessId,
@@ -118,7 +166,7 @@ export async function fetchOrgMembers(orgId: string): Promise<{ members: MemberR
   // Fetch memberships joined with profiles
   const { data: memData, error: memError } = await supabase
     .from('memberships')
-    .select('role, user_id, profiles(id, name, phone)')
+    .select('role, user_id, profiles(id, name, phone, email)')
     .eq('org_id', orgId)
 
   if (memError) {
@@ -128,8 +176,8 @@ export async function fetchOrgMembers(orgId: string): Promise<{ members: MemberR
 
   const members: MemberRow[] = (memData || []).map((m: any) => ({
     userId: m.user_id,
-    name: m.profiles?.name || 'User',
-    phone: m.profiles?.phone || '',
+    name: m.profiles?.name || m.profiles?.email || m.profiles?.phone || 'User',
+    phone: m.profiles?.phone || m.profiles?.email || '',
     role: m.role as MemberRole,
     isCurrentUser: currentUser ? currentUser.id === m.user_id : false,
   }))
@@ -137,7 +185,7 @@ export async function fetchOrgMembers(orgId: string): Promise<{ members: MemberR
   // Fetch invitations
   const { data: invData, error: invError } = await supabase
     .from('invitations')
-    .select('id, phone, role, expires_at')
+    .select('id, phone, email, role, expires_at')
     .eq('org_id', orgId)
     .is('accepted_at', null)
 
@@ -147,7 +195,7 @@ export async function fetchOrgMembers(orgId: string): Promise<{ members: MemberR
 
   const invites: InviteRow[] = (invData || []).map((i: any) => ({
     id: i.id,
-    phone: i.phone,
+    phone: i.phone || i.email || '',
     role: i.role as MemberRole,
     expiresAt: i.expires_at,
   }))
@@ -155,14 +203,17 @@ export async function fetchOrgMembers(orgId: string): Promise<{ members: MemberR
   return { members, invites }
 }
 
-export async function inviteMemberCloud(orgId: string, phone: string, role: MemberRole): Promise<boolean> {
+export async function inviteMemberCloud(orgId: string, contact: string, role: MemberRole): Promise<boolean> {
   if (!supabase) return false
   const user = (await supabase.auth.getUser()).data.user
   if (!user) return false
 
+  const c = contact.trim()
+  const isEmail = c.includes('@')
   const { error } = await supabase.from('invitations').insert({
     org_id: orgId,
-    phone: phone.trim(),
+    phone: isEmail ? null : c.replace(/\D/g, '').slice(-10),
+    email: isEmail ? c.toLowerCase() : null,
     role,
     invited_by: user.id,
   })

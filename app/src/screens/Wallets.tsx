@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { ArrowLeftRight, Edit3, Plus, Wallet as WalletIcon, TrendingUp, TrendingDown } from 'lucide-react'
 import { db, uuid } from '../db/db'
 import { saveTxn } from '../db/ledger'
+import { markDirty } from '../lib/sync'
 import type { Account } from '../db/types'
 import { useData, useToast, undoSave } from '../store'
 import { money, rupeesToPaise, todayISO, formatDate } from '../lib/format'
@@ -264,6 +265,7 @@ export function Wallets() {
                 changes[lang === 'hi' ? 'name_hi' : 'name_en'] = name.trim()
               }
               await db.accounts.update(editing.id, changes)
+              await markDirty('accounts', editing.businessId, editing.id)
               setEditing(null)
             }}
           >

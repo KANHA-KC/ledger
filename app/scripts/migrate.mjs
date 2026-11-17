@@ -20,6 +20,12 @@ if (!match) {
 
 const connectionString = match[1].trim()
 
+if (/:\[[^\]]*\]@/.test(connectionString)) {
+  console.error('\n⚠️ The password in DATABASE_URL (app/.env.local) is still wrapped in [ ] brackets.')
+  console.error('   Remove the brackets: postgresql://postgres:MyPassword@db.xxx.supabase.co:5432/postgres\n')
+  process.exit(1)
+}
+
 if (connectionString.includes('[YOUR-PASSWORD]')) {
   console.error('\n⚠️ Please replace [YOUR-PASSWORD] in app/.env.local with your real Supabase database password before running migrations.\n')
   process.exit(1)
@@ -37,7 +43,8 @@ async function run() {
     await client.connect()
     console.log('✓ Successfully connected to Supabase Postgres!')
 
-    const migrationFile = path.resolve(process.cwd(), '../supabase/migrations/20261116000000_initial_schema.sql')
+    // Usage: npm run db:migrate -- ../supabase/migrations/<file>.sql   (default: the initial schema)
+    const migrationFile = path.resolve(process.cwd(), process.argv[2] || '../supabase/migrations/20261116000000_initial_schema.sql')
     if (!fs.existsSync(migrationFile)) {
       throw new Error(`Migration file not found at ${migrationFile}`)
     }
@@ -61,13 +68,14 @@ async function run() {
     const funcs = await client.query(`
       select routine_name 
       from information_schema.routines 
-      where routine_schema = 'public' and routine_name in ('create_org', 'accept_invite', 'sync_push', 'sync_pull');
+      where routine_schema = 'public' and routine_name in ('create_org', 'accept_invite', 'sync_push', 'sync_pull', 'my_businesses', 'claim_my_invites');
     `)
     console.log('Created functions:', funcs.rows.map((r) => r.routine_name).join(', '))
 
     console.log('\n🎉 Backend database is fully operational!')
   } catch (err) {
     console.error('Migration failed:', err)
+    process.exitCode = 1
   } finally {
     await client.end()
   }
