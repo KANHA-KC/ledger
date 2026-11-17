@@ -3,7 +3,7 @@
   "nav": { "home": "होम", "entries": "एंट्री", "udhaar": "उधार", "more": "और", "profile": "प्रोफ़ाइल", "add": "जोड़ें", "reports": "रिपोर्ट", "categories": "श्रेणी", "wallets": "खाते", "bin": "कचरा पेटी", "settings": "सेटिंग" },
   "act": {
     "in": "पैसा आया", "out": "पैसा गया", "inShort": "+ पैसा आया", "outShort": "− पैसा गया",
-    "save": "सेव करें", "saveChanges": "बदलाव सेव करें", "cancel": "रहने दें", "undo": "वापस लें", "edit": "बदलें", "delete": "हटाएं", "restore": "वापस लाएं",
+    "save": "सेव करें", "saveChanges": "बदलाव सेव करें", "cancel": "रहने दें", "undo": "वापस लें", "edit": "बदलें", "rename": "नाम बदलें", "delete": "हटाएं", "restore": "वापस लाएं",
     "next": "आगे", "back": "पीछे", "done": "हो गया", "skip": "छोड़ें", "seeAll": "सब देखें", "filter": "छांटें",
     "clear": "सब हटाएं", "share": "भेजें", "call": "कॉल", "whatsapp": "व्हाट्सऐप", "addDetails": "और जानकारी (ज़रूरी नहीं)",
     "hideDetails": "जानकारी छुपाएं", "transfer": "पैसा एक खाते से दूसरे में", "add": "जोड़ें", "search": "खोजें",
@@ -56,7 +56,8 @@
     "bulkDeleted": "{count} एंट्री कचरा पेटी में भेजी गईं",
     "changeCategory": "श्रेणी बदलें", "chooseNewCategory": "चुनी हुई एंट्री के लिए नई श्रेणी चुनें",
     "bulkCategoryUpdated": "{count} एंट्री की श्रेणी बदली गई",
-    "exportSelected": "एक्सपोर्ट", "clearSelection": "रद्द करें", "allTypes": "सभी एंट्री", "allTime": "पूरा समय", "edit": "बदलें"
+    "exportSelected": "एक्सपोर्ट", "clearSelection": "रद्द करें", "allTypes": "सभी एंट्री", "allTime": "पूरा समय", "edit": "बदलें",
+    "renameNote": "नाम / नोट बदलें", "renameNoteSub": "इस एंट्री का नोट या विवरण बदलें", "noteUpdated": "एंट्री का नोट अपडेट हो गया", "editFull": "पूरी एंट्री बदलें", "selectMultiple": "कई एंट्री चुनें", "actionsTitle": "कार्रवाई", "selected": "चुनी गईं", "movedToBin": "एंट्री कचरा पेटी में भेजी गई"
   },
   "filter": {
     "title": "छांटें", "direction": "किस तरह", "both": "दोनों", "dateRange": "तारीख", "category": "श्रेणी", "wallet": "खाता", "party": "व्यक्ति",

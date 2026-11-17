@@ -13,8 +13,9 @@ import {
   Wallet,
   Calendar,
 } from 'lucide-react'
-import { useData } from '../store'
-import { computeBalances, isCashIn, isCashOut } from '../db/ledger'
+import { useData, useToast } from '../store'
+import { computeBalances, isCashIn, isCashOut, saveTxn, softDelete, undelete } from '../db/ledger'
+import type { Txn } from '../db/types'
 import { getSetting, setSetting, db } from '../db/db'
 import {
   addDaysISO,
@@ -37,6 +38,7 @@ import { Card, CatIcon, Empty, Heading, Money, SpeakBtn, cx, inputCls } from '..
 import { AppleCard } from '../components/apple/AppleCard'
 import { AppleSegmentedControl } from '../components/apple/AppleSegmentedControl'
 import { EntryRow } from '../components/EntryRow'
+import { EntryActionSheet, QuickRenameModal } from '../components/EntryActionSheet'
 
 const PERIODS: PeriodKey[] = ['toDate', 'today', 'week', 'month', 'lastMonth', 'custom']
 
@@ -47,12 +49,15 @@ function sumIn(txns: { amount: number }[]) {
 export function Home() {
   const { t } = useTranslation()
   const nav = useNavigate()
+  const toast = useToast()
   const { live, balances, accounts, categories, lines, maps, nm, lang } = useData()
   const [period, setPeriod] = useState<PeriodKey>('month')
   const [custom, setCustom] = useState<Range>({
     from: addDaysISO(todayISO(), -30),
     to: todayISO(),
   })
+  const [actionTxn, setActionTxn] = useState<Txn | null>(null)
+  const [renameTxn, setRenameTxn] = useState<Txn | null>(null)
   const guide = useLiveQuery(() => getSetting('guide', false), [])
   const pending = useLiveQuery(() => db.txns.where('syncStatus').equals('pending').count(), [])
 
@@ -596,12 +601,57 @@ export function Home() {
             </div>
             <div className="divide-y divide-black/[0.04] dark:divide-white/[0.06]">
               {recent.map((x) => (
-                <EntryRow key={x.id} t={x} showDate />
+                <EntryRow
+                  key={x.id}
+                  t={x}
+                  showDate
+                  onLongPress={() => setActionTxn(x)}
+                />
               ))}
             </div>
           </div>
         </>
       )}
+
+      {/* Long Press Action Sheet */}
+      <EntryActionSheet
+        open={Boolean(actionTxn)}
+        txn={actionTxn}
+        onClose={() => setActionTxn(null)}
+        onEdit={(txn) => {
+          setActionTxn(null)
+          nav(txn.direction === 'transfer' ? '/entries' : `/add/${txn.direction}?edit=${txn.id}`)
+        }}
+        onRename={(txn) => {
+          setActionTxn(null)
+          setRenameTxn(txn)
+        }}
+        onDelete={async (txn) => {
+          setActionTxn(null)
+          await softDelete(txn.id)
+          toast({
+            text: t('entries.movedToBin') || 'Moved entry to Recycle Bin',
+            tone: 'ok',
+            undo: async () => {
+              await undelete(txn.id)
+            },
+          })
+        }}
+      />
+
+      {/* Quick Rename Modal */}
+      <QuickRenameModal
+        open={Boolean(renameTxn)}
+        txn={renameTxn}
+        onClose={() => setRenameTxn(null)}
+        onSave={async (txn, newNote) => {
+          await saveTxn({ ...txn, note: newNote.trim() })
+          toast({
+            text: t('entries.noteUpdated') || 'Entry note updated',
+            tone: 'ok',
+          })
+        }}
+      />
     </div>
   )
 }

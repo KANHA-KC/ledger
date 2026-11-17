@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from '../lib/navigation'
+import { useSearchParams, useNavigate } from '../lib/navigation'
 import { useTranslation } from 'react-i18next'
 import {
   SlidersHorizontal,
@@ -33,6 +33,7 @@ import { downloadEntriesCSV, printEntries } from './reportUtils'
 import { saveTxn, softDelete, undelete } from '../db/ledger'
 import type { Txn } from '../db/types'
 import { EntryRow } from '../components/EntryRow'
+import { EntryActionSheet, QuickRenameModal } from '../components/EntryActionSheet'
 
 type SortField = 'date' | 'category' | 'note' | 'amount'
 type SortDir = 'asc' | 'desc'
@@ -40,6 +41,7 @@ type SortDir = 'asc' | 'desc'
 export function Entries() {
   const { t } = useTranslation()
   const [sp, setSp] = useSearchParams()
+  const navigate = useNavigate()
   const data = useData()
   const { live, maps, nm, lang, categories, accounts, parties, txns } = data
   const toast = useToast()
@@ -49,6 +51,8 @@ export function Entries() {
   const [categorySheetOpen, setCategorySheetOpen] = useState(false)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [singleDeleteTarget, setSingleDeleteTarget] = useState<Txn | null>(null)
+  const [actionSheetTxn, setActionSheetTxn] = useState<Txn | null>(null)
+  const [renameTarget, setRenameTarget] = useState<Txn | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
 
   // Selection state
@@ -188,6 +192,47 @@ export function Entries() {
       toast({
         text: t('entries.bulkCategoryUpdated', { count }) || `Updated category for ${count} entries`,
         tone: 'ok',
+      })
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+  // Row Long Press Action
+  const handleRowLongPress = (x: Txn) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      next.add(x.id)
+      return next
+    })
+    setActionSheetTxn(x)
+  }
+
+  // Quick Rename Handler
+  const handleSaveRename = async (txn: Txn, newNote: string) => {
+    await saveTxn({ ...txn, note: newNote.trim() })
+    toast({
+      text: t('entries.noteUpdated') || 'Entry note updated',
+      tone: 'ok',
+    })
+  }
+
+  // Single Delete Handler
+  const handleSingleDelete = async (x: Txn) => {
+    setIsProcessing(true)
+    try {
+      await softDelete(x.id)
+      setSelectedIds((prev) => {
+        const next = new Set(prev)
+        next.delete(x.id)
+        return next
+      })
+      toast({
+        text: t('entries.movedToBin') || 'Moved entry to Recycle Bin',
+        tone: 'ok',
+        undo: async () => {
+          await undelete(x.id)
+        },
       })
     } finally {
       setIsProcessing(false)
@@ -514,9 +559,44 @@ export function Entries() {
         <>
           {/* Mobile Native View (< md screens): iOS Grouped Card List with EntryRow */}
           <div className="md:hidden">
+            {/* Mobile Selection Action / Count Bar */}
+            {selectedIds.size > 0 && (
+              <div className="mb-2 flex items-center justify-between px-1 py-0.5 animate-in fade-in duration-150">
+                <span className="text-xs font-bold text-[#007AFF] dark:text-[#0A84FF]">
+                  {t('entries.selectedCount', { count: selectedIds.size }) || `${selectedIds.size} selected`}
+                  {selectedTotalAmount > 0 && ` · ${money(selectedTotalAmount)}`}
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={toggleSelectAll}
+                    className="apple-press text-xs font-semibold text-[#007AFF] dark:text-[#0A84FF] hover:underline"
+                  >
+                    {allSelected ? (t('act.clear') || 'Deselect All') : (t('entries.selectAll') || 'Select All')}
+                  </button>
+                  <span className="text-neutral-300 dark:text-neutral-600">·</span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedIds(new Set())}
+                    className="apple-press text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white"
+                  >
+                    {t('act.done') || 'Done'}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="apple-card divide-y divide-black/[0.04] dark:divide-white/[0.06] overflow-hidden shadow-sm">
               {list.map((x) => (
-                <EntryRow key={x.id} t={x} showDate />
+                <EntryRow
+                  key={x.id}
+                  t={x}
+                  showDate
+                  selected={selectedIds.has(x.id)}
+                  selectionMode={selectedIds.size > 0}
+                  onSelect={() => toggleSelect(x.id)}
+                  onLongPress={() => handleRowLongPress(x)}
+                />
               ))}
             </div>
           </div>
@@ -749,20 +829,34 @@ export function Entries() {
 
       {/* Bulk Action Floating Toolbar */}
       {selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200">
-          <div className="flex items-center gap-2 pr-2 border-r border-black/10 dark:border-white/10 text-xs sm:text-sm font-bold text-neutral-900 dark:text-white whitespace-nowrap">
+        <div className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1.5 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 rounded-2xl bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-200 max-w-[95vw]">
+          <div className="flex items-center gap-1.5 sm:gap-2 pr-2 border-r border-black/10 dark:border-white/10 text-xs sm:text-sm font-bold text-neutral-900 dark:text-white whitespace-nowrap">
             <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#007AFF] text-[10px] text-white">
               {selectedIds.size}
             </span>
-            <span>{money(selectedTotalAmount)}</span>
+            <span className="hidden xs:inline">{money(selectedTotalAmount)}</span>
           </div>
+
+          {/* Quick Rename (when exactly 1 selected) */}
+          {selectedTxns.length === 1 && (
+            <button
+              type="button"
+              onClick={() => setRenameTarget(selectedTxns[0])}
+              disabled={isProcessing}
+              className="apple-press flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-xs font-semibold text-neutral-800 dark:text-neutral-200"
+              title={t('act.rename') || 'Rename'}
+            >
+              <Pencil className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+              <span className="hidden sm:inline">{t('act.rename') || 'Rename'}</span>
+            </button>
+          )}
 
           {/* Change Category Action */}
           <button
             type="button"
             onClick={() => setCategorySheetOpen(true)}
             disabled={isProcessing}
-            className="apple-press flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-xs font-semibold text-neutral-800 dark:text-neutral-200"
+            className="apple-press flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-xs font-semibold text-neutral-800 dark:text-neutral-200"
           >
             <FolderInput className="h-3.5 w-3.5 text-[#007AFF]" />
             <span className="hidden sm:inline">{t('entries.changeCategory') || 'Change Category'}</span>
@@ -924,6 +1018,42 @@ export function Entries() {
           tags: [...new Set(txns.flatMap((x) => x.tags))],
           count: (nf) => applyFilter(live, nf, { ...maps, lang }).length,
         }}
+      />
+
+      {/* Long Press Action Sheet */}
+      <EntryActionSheet
+        open={Boolean(actionSheetTxn)}
+        txn={actionSheetTxn}
+        onClose={() => setActionSheetTxn(null)}
+        onEdit={(txn) => {
+          setActionSheetTxn(null)
+          navigate(txn.direction === 'transfer' ? '/entries' : `/add/${txn.direction}?edit=${txn.id}`)
+        }}
+        onRename={(txn) => {
+          setActionSheetTxn(null)
+          setRenameTarget(txn)
+        }}
+        onChangeCategory={(txn) => {
+          setActionSheetTxn(null)
+          setSelectedIds(new Set([txn.id]))
+          setCategorySheetOpen(true)
+        }}
+        onSelectMultiple={(txn) => {
+          setActionSheetTxn(null)
+          // Row remains selected in selectedIds, allowing user to tap more rows
+        }}
+        onDelete={async (txn) => {
+          setActionSheetTxn(null)
+          await handleSingleDelete(txn)
+        }}
+      />
+
+      {/* Quick Rename Modal */}
+      <QuickRenameModal
+        open={Boolean(renameTarget)}
+        txn={renameTarget}
+        onClose={() => setRenameTarget(null)}
+        onSave={handleSaveRename}
       />
     </div>
   )

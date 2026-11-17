@@ -3,7 +3,7 @@
   "nav": { "home": "Home", "entries": "Entries", "udhaar": "Udhaar", "more": "More", "profile": "Profile", "add": "Add", "reports": "Reports", "categories": "Categories", "wallets": "Wallets", "bin": "Bin", "settings": "Settings" },
   "act": {
     "in": "Money In", "out": "Money Out", "inShort": "+ Money In", "outShort": "− Money Out",
-    "save": "Save", "saveChanges": "Save Changes", "cancel": "Cancel", "undo": "Undo", "edit": "Edit", "delete": "Delete", "restore": "Restore",
+    "save": "Save", "saveChanges": "Save Changes", "cancel": "Cancel", "undo": "Undo", "edit": "Edit", "rename": "Rename", "delete": "Delete", "restore": "Restore",
     "next": "Next", "back": "Back", "done": "Done", "skip": "Skip", "seeAll": "See all", "filter": "Filter",
     "clear": "Clear all", "share": "Share", "call": "Call", "whatsapp": "WhatsApp", "addDetails": "Add details (optional)",
     "hideDetails": "Hide details", "transfer": "Move money", "add": "Add", "search": "Search",
@@ -56,7 +56,8 @@
     "bulkDeleted": "Moved {count, plural, one {# entry} other {# entries}} to Recycle Bin",
     "changeCategory": "Change Category", "chooseNewCategory": "Choose category for selected entries",
     "bulkCategoryUpdated": "Updated category for {count, plural, one {# entry} other {# entries}}",
-    "exportSelected": "Export", "clearSelection": "Cancel", "allTypes": "All Entries", "allTime": "All Time", "edit": "Edit"
+    "exportSelected": "Export", "clearSelection": "Cancel", "allTypes": "All Entries", "allTime": "All Time", "edit": "Edit",
+    "renameNote": "Rename / Edit Note", "renameNoteSub": "Update description or note for this entry", "noteUpdated": "Entry note updated", "editFull": "Edit Entry", "selectMultiple": "Select Multiple", "actionsTitle": "Entry Actions", "selected": "selected", "movedToBin": "Moved entry to Recycle Bin"
   },
   "filter": {
     "title": "Filter", "direction": "Type", "both": "Both", "dateRange": "Date", "category": "Category", "wallet": "Wallet", "party": "Person",
