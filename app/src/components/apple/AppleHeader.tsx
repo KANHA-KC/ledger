@@ -1,10 +1,12 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslation } from 'react-i18next'
-import { ChevronLeft, Globe, WifiOff } from 'lucide-react'
+import { ChevronLeft, Globe, Menu, WifiOff, X } from 'lucide-react'
+import { CategoryNav } from '../CategoryNav'
 import { setLanguage } from '../../i18n'
 import { useData } from '../../store'
 
@@ -30,6 +32,7 @@ export function AppleHeader({
   const { business } = useData()
   const [online, setOnline] = useState(true)
   const [userName, setUserName] = useState('Dilip Chandravanshi')
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     setOnline(navigator.onLine)
@@ -89,8 +92,16 @@ export function AppleHeader({
               <span className="text-base font-medium">{t('act.cancel') || 'Back'}</span>
             </button>
           ) : (
-            /* Brand badge for mobile when sidebar is hidden */
+            /* Brand badge + category menu button for mobile when sidebar is hidden */
             <div className="flex items-center gap-2 md:hidden">
+              <button
+                type="button"
+                onClick={() => setMenuOpen(true)}
+                aria-label="Open categories menu"
+                className="apple-press -ml-1 flex h-9 w-9 items-center justify-center rounded-full text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#007AFF] text-sm font-bold text-white shadow-sm">
                 ₹
               </div>
@@ -150,6 +161,28 @@ export function AppleHeader({
             </p>
           )}
         </div>
+      )}
+      {menuOpen && createPortal(
+        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Categories menu">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
+          <div className="absolute inset-y-0 left-0 flex w-[82%] max-w-xs flex-col bg-white shadow-2xl dark:bg-[#1C1C1E]">
+            <div className="flex h-14 items-center justify-between border-b border-black/[0.06] px-4 dark:border-white/[0.08]">
+              <span className="apple-headline text-neutral-900 dark:text-white">{t('nav.categories') || 'Categories'}</span>
+              <button type="button" onClick={() => setMenuOpen(false)} aria-label="Close menu"
+                className="apple-press flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-[#2C2C2E]">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3">
+              <CategoryNav onNavigate={() => setMenuOpen(false)} />
+              <Link href="/categories" onClick={() => setMenuOpen(false)}
+                className="mt-2 block rounded-xl px-3 py-2 text-sm font-semibold text-[#007AFF] dark:text-[#0A84FF]">
+                {t('nav.categories') || 'Categories'} — Edit
+              </Link>
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </header>
   )

@@ -16,6 +16,7 @@ import {
   User,
 } from 'lucide-react'
 import { useData } from '../../store'
+import { CategoryNav } from '../CategoryNav'
 
 export function AppleTabBar() {
   const pathname = usePathname()
@@ -115,6 +116,12 @@ export function AppleTabBar() {
               </Link>
             )
           })}
+
+          <div className="mb-1 mt-5 flex items-center justify-between px-2 text-[11px] font-semibold text-[#8E8E93] dark:text-[#A1A1A6]">
+            <span>{t('nav.categories') || 'Categories'}</span>
+            <Link href="/categories" className="text-[#007AFF] dark:text-[#0A84FF]">Edit</Link>
+          </div>
+          <CategoryNav />
         </div>
       </aside>
 
