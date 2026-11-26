@@ -11,6 +11,16 @@ import { useData } from '../store'
 import { cx } from './ui'
 import { AppIcon } from './AppIcon'
 
+/** Kept as categories (udhaar entries, owner's capital) but not listed in the menu. */
+const HIDDEN_IN_MENU = new Set(['udhaar_mila', 'udhaar_liya', 'udhaar_diya', 'udhaar_chukaya', 'malik'])
+
+function isHiddenInMenu(c: Category): boolean {
+  if (c.hidden) return true
+  if (c.key && (HIDDEN_IN_MENU.has(c.key) || c.key.toLowerCase().startsWith('udhaar'))) return true
+  if (c.special?.startsWith('udhaar')) return true
+  return false
+}
+
 export function useCategoryStats() {
   const { live } = useData()
   return useMemo(() => {
@@ -32,7 +42,7 @@ export function CategoryNav({ onNavigate }: { onNavigate?: () => void }) {
   const stats = useCategoryStats()
 
   const groups = useMemo(() => {
-    const visible = categories.filter((c) => !c.hidden)
+    const visible = categories.filter((c) => !isHiddenInMenu(c))
     const ids = new Set(visible.map((c) => c.id))
     const children = new Map<string, Category[]>()
     for (const c of visible) {

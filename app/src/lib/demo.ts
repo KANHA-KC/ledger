@@ -52,8 +52,8 @@ export const DEFAULT_DEMO_OUT_CATEGORIES = [
   },
   {
     key: 'sugarcane_bought',
-    name_en: 'Sugarcane Baought',
-    name_hi: 'सुगर्कने बऔघ्त',
+    name_en: 'Dhan / Paddy Bought',
+    name_hi: 'धान खरीद',
     icon: '🌾',
     color: '#be185d',
     dir: 'out' as const,
@@ -82,8 +82,8 @@ export const DEFAULT_DEMO_IN_CATEGORIES = [
   },
   {
     key: 'sugarcane_sales',
-    name_en: 'Sugarcane / Gur Sales',
-    name_hi: 'गुड़ / गन्ना बिक्री',
+    name_en: 'Dhan / Paddy Sales',
+    name_hi: 'धान बिक्री',
     icon: '🌾',
     color: '#b45309',
     dir: 'in' as const,

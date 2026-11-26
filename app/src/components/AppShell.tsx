@@ -7,7 +7,8 @@ import type { Business } from '../db/types'
 import { purgeBin } from '../db/ledger'
 import { loadPersonalDict } from '../lib/translit'
 import { setNumerals } from '../lib/format'
-import { startSyncLoop } from '../lib/sync'
+import { markDirty, startSyncLoop } from '../lib/sync'
+import { renameLegacyDefaults } from '../db/seed'
 import { checkAndRunScheduledBackup } from '../lib/backup'
 import { ensureDemoCategories, DEMO_BUSINESS_ID, DEMO_BUSINESS_NAME } from '../lib/demo'
 import { removeAllDummyData, removeAllUdhaarTransactions, cleanPartyNames } from '../lib/dummyData'
@@ -69,6 +70,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           }
           await ensureDemoCategories(b.id)
         }
+      }
+      if (b) {
+        const renamed = await renameLegacyDefaults(b.id).catch(() => [] as string[])
+        for (const cid of renamed) markDirty('categories', b.id, cid)
       }
       setBusiness(b ?? null)
       purgeBin().catch(() => {})

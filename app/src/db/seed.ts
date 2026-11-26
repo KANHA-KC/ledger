@@ -46,7 +46,7 @@ const COMMON_OUT: Def[] = [
   { key: 'equip', dir: 'out', en: 'Equip', hi: 'एकुइप', icon: '🔧', kw: ['equip', 'equipment', 'tool', 'tools', 'औजार', 'एकुइप', 'इक्विप'] },
   { key: 'running_cost', dir: 'out', en: 'Running cost', hi: 'रूनिङ कोस्त', icon: '⛽', kw: ['running cost', 'fuel', 'petrol', 'diesel', 'खर्च', 'रूनिङ कोस्त', 'डीजल', 'पेट्रोल'] },
   { key: 'other_expense', dir: 'out', en: 'Other Expense', hi: 'ओथेर एक्स्पेंसे', icon: '🧾', kw: ['other', 'other expense', 'anya', 'अन्य खर्च', 'ओथेर एक्स्पेंसे'] },
-  { key: 'sugarcane_bought', dir: 'out', en: 'Sugarcane Baought', hi: 'सुगर्कने बऔघ्त', icon: '🌾', kw: ['sugarcane', 'ganna', 'sugarcane bought', 'sugarcane baought', 'गन्ना', 'सुगर्कने', 'बऔघ्त'] },
+  { key: 'sugarcane_bought', dir: 'out', en: 'Dhan / Paddy Bought', hi: 'धान खरीद', icon: '🌾', kw: ['dhan', 'paddy', 'dhan kharida', 'धान', 'धान खरीद'] },
   { key: 'tins', dir: 'out', en: 'Tins', hi: 'टिंस', icon: '📦', kw: ['tin', 'tins', 'dabba', 'dappe', 'टीन', 'टिंस', 'डिब्बा'] },
   { key: 'udhaar_diya', dir: 'out', en: 'Udhaar given', hi: 'उधार दिया', icon: '🤲', special: 'udhaar_diya', kw: ['udhaar diya', 'उधार दिया', 'udhar diya'] },
   { key: 'udhaar_chukaya', dir: 'out', en: 'Udhaar repaid', hi: 'उधार चुकाया', icon: '💸', special: 'udhaar_chukaya', kw: ['chukaya', 'चुकाया', 'किस्त', 'kisht', 'emi'] },
@@ -161,9 +161,9 @@ const DEMO_EXTRA_DEFS: Def[] = [
   { key: 'equip', dir: 'out', en: 'Equip', hi: 'एकुइप', icon: '🔧', kw: ['equip'] },
   { key: 'running_cost', dir: 'out', en: 'Running cost', hi: 'रूनिङ कोस्त', icon: '⛽', kw: ['running'] },
   { key: 'other_expense', dir: 'out', en: 'Other Expense', hi: 'ओथेर एक्स्पेंसे', icon: '🧾', kw: ['other'] },
-  { key: 'sugarcane_bought', dir: 'out', en: 'Sugarcane Baought', hi: 'सुगर्कने बऔघ्त', icon: '🌾', kw: ['sugarcane'] },
+  { key: 'sugarcane_bought', dir: 'out', en: 'Dhan / Paddy Bought', hi: 'धान खरीद', icon: '🌾', kw: ['dhan', 'paddy'] },
   { key: 'tins', dir: 'out', en: 'Tins', hi: 'टिंस', icon: '📦', kw: ['tins'] },
-  { key: 'sugarcane_sales', dir: 'in', en: 'Sugarcane / Gur Sales', hi: 'गुड़ / गन्ना बिक्री', icon: '🌾', kw: ['gur'] },
+  { key: 'sugarcane_sales', dir: 'in', en: 'Dhan / Paddy Sales', hi: 'धान बिक्री', icon: '🌾', kw: ['dhan', 'paddy', 'धान बिक्री'] },
 ]
 
 /**
@@ -232,4 +232,24 @@ export async function syncOrphanedCategoriesToBin(businessId: string, businessTy
   }
 
   return toAdd.length
+}
+
+/** Old default names → new ones. Only categories still carrying the old default name are renamed. */
+const RENAMED_DEFAULTS: Record<string, { from: string[]; en: string; hi: string }> = {
+  sugarcane_sales: { from: ['Sugarcane / Gur Sales'], en: 'Dhan / Paddy Sales', hi: 'धान बिक्री' },
+  sugarcane_bought: { from: ['Sugarcane Baought', 'Sugarcane Bought'], en: 'Dhan / Paddy Bought', hi: 'धान खरीद' },
+}
+
+/** Returns the ids of the categories it renamed, so the caller can queue them for sync. */
+export async function renameLegacyDefaults(businessId: string): Promise<string[]> {
+  const cats = await db.categories.where('businessId').equals(businessId).toArray()
+  const now = new Date().toISOString()
+  const changed: string[] = []
+  for (const c of cats) {
+    const r = c.key ? RENAMED_DEFAULTS[c.key] : undefined
+    if (!r || !r.from.includes(c.name_en)) continue
+    await db.categories.update(c.id, { name_en: r.en, name_hi: r.hi, updatedAt: now })
+    changed.push(c.id)
+  }
+  return changed
 }
