@@ -37,7 +37,10 @@ function explain(msg: string, method: LoginMethod): string {
   const m = msg.toLowerCase()
   if (m.includes('unsupported phone provider') || m.includes('phone') && m.includes('disabled'))
     return 'Phone login is not switched on for this app yet. Use email instead, or ask the admin to enable an SMS provider in Supabase.'
-  if (m.includes('signups not allowed')) return 'New sign-ups are disabled in Supabase (Auth → Providers).'
+  if (m.includes('signups not allowed') || m.includes('signup') && m.includes('disabled') || m.includes('user not found'))
+    return method === 'email'
+      ? 'This email does not have access yet. Hisaab is invite-only: ask your admin or shop owner to add you.'
+      : 'This number does not have access yet. Hisaab is invite-only: ask your admin or shop owner to add you.'
   if (m.includes('rate limit') || m.includes('security purposes'))
     return 'Too many codes requested. Please wait a minute and try again.'
   if (m.includes('expired') || m.includes('invalid')) return method === 'email' ? 'Wrong or expired code. Check the latest email.' : 'Wrong or expired OTP.'
@@ -52,9 +55,9 @@ export async function sendOtp(contact: string, method: LoginMethod = 'phone'): P
       method === 'email'
         ? await supabase.auth.signInWithOtp({
             email: contact.trim().toLowerCase(),
-            options: { shouldCreateUser: true, emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
+            options: { shouldCreateUser: false, /* invite-only: accounts are created by an admin */ emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined },
           })
-        : await supabase.auth.signInWithOtp({ phone: normalizePhone(contact) })
+        : await supabase.auth.signInWithOtp({ phone: normalizePhone(contact), options: { shouldCreateUser: false } })
     if (error) return { success: false, error: explain(error.message, method) }
     return { success: true }
   } catch (err) {

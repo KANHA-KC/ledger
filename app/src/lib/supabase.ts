@@ -203,25 +203,25 @@ export async function fetchOrgMembers(orgId: string): Promise<{ members: MemberR
   return { members, invites }
 }
 
-export async function inviteMemberCloud(orgId: string, contact: string, role: MemberRole): Promise<boolean> {
-  if (!supabase) return false
-  const user = (await supabase.auth.getUser()).data.user
-  if (!user) return false
-
-  const c = contact.trim()
-  const isEmail = c.includes('@')
-  const { error } = await supabase.from('invitations').insert({
-    org_id: orgId,
-    phone: isEmail ? null : c.replace(/\D/g, '').slice(-10),
-    email: isEmail ? c.toLowerCase() : null,
-    role,
-    invited_by: user.id,
+/** Call one of this app's server routes (app/api/*) as the signed-in user. Throws with the server's message. */
+export async function apiFetch<T = unknown>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
+  if (!supabase) throw new Error('Cloud is not configured')
+  const token = (await supabase.auth.getSession()).data.session?.access_token
+  if (!token) throw new Error('Sign in to the cloud first (More → Sign in to sync)')
+  const res = await fetch(path, {
+    method: init.method ?? 'GET',
+    headers: { Authorization: `Bearer ${token}`, ...(init.body !== undefined ? { 'Content-Type': 'application/json' } : {}) },
+    body: init.body !== undefined ? JSON.stringify(init.body) : undefined,
   })
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(json.error || `Request failed (${res.status})`)
+  return json as T
+}
 
-  if (error) {
-    console.error('[Supabase] invite error:', error)
-    throw error
-  }
+/** Add a team member. Sign-ups are closed, so the server creates their login if needed and adds them to the shop. */
+export async function inviteMemberCloud(orgId: string, contact: string, role: MemberRole): Promise<boolean> {
+  if (role === 'owner') throw new Error('A shop has only one owner')
+  await apiFetch('/api/team/invite', { method: 'POST', body: { orgId, contact, role } })
   return true
 }
 
