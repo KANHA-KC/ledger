@@ -193,12 +193,13 @@ export function ProfileOrgSheet({
       try {
         await inviteMemberCloud(business.orgId, newMemberPhone.trim(), newMemberRole)
         toast({
-          text: `Invite sent to ${newMemberPhone.trim()}`,
+          text: `${newMemberPhone.trim()} added. They can now sign in with it.`,
           tone: 'ok',
         })
       } catch (err: any) {
         console.error('Failed to send cloud invite:', err)
-        toast({ text: err.message || 'Failed to send invite', tone: 'info' })
+        toast({ text: err.message || 'Failed to add member', tone: 'info' })
+        return
       }
     }
 

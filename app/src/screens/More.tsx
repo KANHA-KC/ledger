@@ -28,6 +28,7 @@ import {
 } from 'lucide-react'
 import { ProfileOrgSheet } from '../components/ProfileOrgSheet'
 import { CloudSyncCard } from '../components/CloudSyncCard'
+import { AdminLink } from '../components/AdminLink'
 import { db, getSetting, setSetting } from '../db/db'
 import { useData, useToast } from '../store'
 import { setLanguage } from '../i18n'
@@ -326,6 +327,7 @@ export function More({
       </div>
 
       <CloudSyncCard business={business} />
+      <AdminLink />
 
       {/* Settings Grid on Desktop: Data & Danger */}
       <div className="grid gap-4 md:grid-cols-2 items-start">
